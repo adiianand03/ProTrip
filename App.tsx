@@ -11,6 +11,9 @@ import {
   SafeAreaProvider,
   useSafeAreaInsets,
 } from 'react-native-safe-area-context';
+import HomeScreen from './src/screens/HomeScreen';
+
+export type ScreenName = 'Home' | 'Chat' | 'Dummy' | 'Profile' | 'TravelRequest' | 'Settings' | 'Help' | 'LogOut';
 
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
@@ -28,10 +31,7 @@ function AppContent() {
 
   return (
     <View style={styles.container}>
-      <NewAppScreen
-        templateFileName="App.tsx"
-        safeAreaInsets={safeAreaInsets}
-      />
+      <HomeScreen />
     </View>
   );
 }
