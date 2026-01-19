@@ -5,41 +5,58 @@
  * @format
  */
 
-import { NewAppScreen } from '@react-native/new-app-screen';
-import { StatusBar, StyleSheet, useColorScheme, View } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import React from 'react';
+import { TicketProvider } from './src/context/TicketContext';
 import {
-  SafeAreaProvider,
-  useSafeAreaInsets,
-} from 'react-native-safe-area-context';
+  SafeAreaView,
+  StatusBar, useColorScheme
+} from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import HomeScreen from './src/screens/HomeScreen';
+import LoginScreen from './src/screens/LoginScreen';
+import TravelRequestScreen from './src/screens/TravelRequestScreen';
+import DummyScreen from './src/screens/DummyScreen';
+import TravelSettlementScreen from './src/screens/TravelSettlementScreen';
+import TravelSettlementReport from './src/screens/TravelSettlementReport';
+import CreateTicketScreen from './src/screens/CreateTicketScreen';
 
-export type ScreenName = 'Home' | 'Chat' | 'Dummy' | 'Profile' | 'TravelRequest' | 'Settings' | 'Help' | 'LogOut';
+export type RootStackParamList = {
+  Login: undefined;
+  Home: undefined;
+  TravelRequest: undefined;
+  CreateTicket: undefined;
+  Dummy: undefined;
+  TravelSettlement: undefined;
+  TravelSettlementReport: undefined;
+};
 
-function App() {
-  const isDarkMode = useColorScheme() === 'dark';
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
+function App(): React.JSX.Element {
   return (
     <SafeAreaProvider>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <AppContent />
+      <TicketProvider>
+        <NavigationContainer>
+          <Stack.Navigator
+            initialRouteName="Login"
+            screenOptions={{
+              headerShown: false,
+            }}
+          >
+            <Stack.Screen name="Login" component={LoginScreen} />
+            <Stack.Screen name="Home" component={HomeScreen} />
+            <Stack.Screen name="TravelRequest" component={TravelRequestScreen} />
+            <Stack.Screen name="CreateTicket" component={CreateTicketScreen} />
+            <Stack.Screen name="Dummy" component={DummyScreen} />
+            <Stack.Screen name="TravelSettlement" component={TravelSettlementScreen} />
+            <Stack.Screen name="TravelSettlementReport" component={TravelSettlementReport} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </TicketProvider>
     </SafeAreaProvider>
   );
 }
-
-function AppContent() {
-  const safeAreaInsets = useSafeAreaInsets();
-
-  return (
-    <View style={styles.container}>
-      <HomeScreen />
-    </View>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
 
 export default App;

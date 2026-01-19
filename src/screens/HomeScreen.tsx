@@ -3,13 +3,13 @@ import {
     View,
     Text,
     StyleSheet,
-    SafeAreaView,
+    TouchableOpacity,
     ScrollView,
     StatusBar,
     Alert,
     Platform,
-    TouchableOpacity,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import DashboardCard from '../components/DashboardCard';
 
 declare const window: any;
@@ -21,23 +21,21 @@ import MobileBg from '../assets/images/mobile-bg.svg';
 import UploadIcon from '../assets/images/upload_folder.svg';
 import ChatQnaIcon from '../assets/images/chat_qna.svg';
 import ProfileIcon from '../assets/images/profile.svg';
-import { ScreenName } from '../../App';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../../App';
 
-// Removed PNG requires
+type HomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Home'>;
 
-interface HomeScreenProps {
-    onNavigate?: (screen: ScreenName) => void;
-}
+interface HomeScreenProps { }
 
-const HomeScreen: React.FC<HomeScreenProps> = ({ onNavigate }) => {
+const HomeScreen: React.FC<HomeScreenProps> = () => {
+    const navigation = useNavigation<HomeScreenNavigationProp>();
     const [isProfileOpen, setIsProfileOpen] = React.useState(false);
 
     const handleHomePress = () => {
-        // Reload/Reset logic - for now just navigating to Home acts as reset if needed,
-        // or we can force update. Since we are already on Home, maybe just log or no-op.
-        // In a real app, this might reset scroll position or fetch data.
-        console.log('Home Pressed - Refreshing');
-        onNavigate?.('Home');
+        // Already on home, maybe scroll to top or no-op
+        console.log('Home Pressed');
     };
 
     const handleUploadPress = () => {
@@ -45,31 +43,27 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ onNavigate }) => {
     };
 
     const handleChatPress = () => {
-        onNavigate?.('Dummy');
+        navigation.navigate('Dummy');
     };
 
     const handleProfilePress = () => {
         setIsProfileOpen(!isProfileOpen);
     };
 
-    const handleProfileOption = (option: ScreenName) => {
+    const handleProfileOption = (option: string) => {
         setIsProfileOpen(false);
-        onNavigate?.('Dummy');
+        if (option === 'LogOut') {
+            navigation.replace('Login');
+        } else {
+            navigation.navigate('Dummy');
+        }
     };
     const handleTravelRequestPress = () => {
-        if (Platform.OS === 'web') {
-            window.alert('Success: Travel Request Initiated');
-        } else {
-            Alert.alert('Success', 'Travel Request Initiated');
-        }
+        navigation.navigate('TravelRequest');
     };
 
     const handleExpenseReportPress = () => {
-        if (Platform.OS === 'web') {
-            window.alert('Success: Expense Report Generated');
-        } else {
-            Alert.alert('Success', 'Expense Report Generated');
-        }
+        navigation.navigate('TravelSettlement');
     };
 
     return (
@@ -130,7 +124,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ onNavigate }) => {
                 />
 
                 <DashboardCard
-                    title="Expense Report"
+                    title="Travel Settlement"
                     Icon={ExpenseReportIcon}
                     onPress={handleExpenseReportPress}
                 />
