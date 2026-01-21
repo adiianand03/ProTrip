@@ -1,6 +1,5 @@
 import React, { useState, useContext } from 'react';
 import {
-    SafeAreaView,
     View,
     Text,
     StyleSheet,
@@ -11,6 +10,7 @@ import {
     Alert,
     FlatList
 } from 'react-native';
+import MainLayout from '../components/MainLayout';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
@@ -38,7 +38,7 @@ const TravelSettlementReport = () => {
         }
 
         // Generate ERI ID
-        const eriId = `ERI/27/${Math.floor(Math.random() * 10000)}`;
+        const eriId = `ERI / 27 / ${Math.floor(Math.random() * 10000)} `;
 
         navigation.navigate('AddExpense', {
             eriId,
@@ -48,16 +48,16 @@ const TravelSettlementReport = () => {
     };
 
     return (
-        <SafeAreaView style={{ flex: 1 }}>
-            {/* NAV BAR */}
-            <View style={styles.navbar} />
-
-            <ImageBackground source={bgImg} style={styles.bg} resizeMode="cover">
-                {/* BACK */}
-                <TouchableOpacity onPress={() => navigation.goBack()}>
-                    <Text style={styles.backText}>← Back</Text>
-                </TouchableOpacity>
-
+        <MainLayout>
+            <View style={styles.container}>
+                {/* Header */}
+                <View style={styles.header}>
+                    <TouchableOpacity onPress={() => navigation.goBack()} style={{ padding: 5 }}>
+                        <Text style={{ fontSize: 24, color: '#333' }}>←</Text>
+                    </TouchableOpacity>
+                    <Text style={styles.headerTitle}>Travel Settlement</Text>
+                    <View style={{ width: 24 }} />
+                </View>
                 {/* CARD */}
                 <View style={styles.card}>
                     <Text style={styles.heading}>
@@ -133,8 +133,8 @@ const TravelSettlementReport = () => {
                         </TouchableOpacity>
                     </View>
                 </View>
-            </ImageBackground>
-        </SafeAreaView>
+            </View>
+        </MainLayout>
     );
 };
 
@@ -280,5 +280,24 @@ const styles = StyleSheet.create({
     submitText: {
         color: '#fff',
         fontWeight: '600',
+    },
+    container: {
+        flex: 1,
+        backgroundColor: '#f5f5f5',
+    },
+    header: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingHorizontal: 20,
+        paddingVertical: 15,
+        backgroundColor: '#fff',
+        borderBottomWidth: 1,
+        borderBottomColor: '#eee',
+    },
+    headerTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#333',
     },
 });

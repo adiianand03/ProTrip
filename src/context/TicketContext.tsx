@@ -25,6 +25,7 @@ interface TicketContextType {
     addTicket: (ticket: Ticket) => void;
     settlements: Settlement[];
     addSettlement: (settlement: Settlement) => void;
+    userEmail?: string;
 }
 
 export const TicketContext = createContext<TicketContextType>({
@@ -32,6 +33,7 @@ export const TicketContext = createContext<TicketContextType>({
     addTicket: () => { },
     settlements: [],
     addSettlement: () => { },
+    userEmail: 'varun.adithya@example.com',
 });
 
 export const TicketProvider = ({ children }: { children: ReactNode }) => {

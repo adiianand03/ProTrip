@@ -1,6 +1,5 @@
 import React, { useContext } from 'react';
 import {
-    SafeAreaView,
     View,
     Text,
     StyleSheet,
@@ -9,6 +8,7 @@ import {
     StatusBar,
     FlatList,
 } from 'react-native';
+import MainLayout from '../components/MainLayout';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
@@ -47,15 +47,13 @@ const TravelSettlement = () => {
     const { settlements } = useContext(TicketContext);
 
     const renderApprovalChain = () => {
+        const currentIndex = APPROVAL_STEPS.findIndex(step => step.status === 'current');
         return (
-            <View style={styles.chainContainer}>
-                {/* Line Background */}
-                <View style={styles.chainLine} />
-                <View style={styles.chainSteps}>
-                    {APPROVAL_STEPS.map((step, index) => (
-                        <View key={index} style={styles.stepWrapper}>
-                            <Text style={styles.stepLabel}>{step.label}</Text>
-                            <View style={styles.stepIconContainer}>
+            <View style={styles.approvalChain}>
+                {APPROVAL_STEPS.map((step, index) => (
+                    <React.Fragment key={index}>
+                        <View style={styles.stepContainer}>
+                            <View style={[styles.stepIconContainer, { borderColor: step.status === 'done' ? '#7cb518' : step.status === 'current' ? '#007bff' : '#e0e0e0' }]}>
                                 {step.status === 'done' ? (
                                     <StepperCheck width={24} height={24} />
                                 ) : step.status === 'current' ? (
@@ -64,138 +62,141 @@ const TravelSettlement = () => {
                                     <StepperCircle />
                                 )}
                             </View>
-                            <Text style={styles.stepUser}>{step.user}</Text>
+                            <Text style={styles.stepLabel}>{step.label}</Text>
+                            {(index === 0 || index === APPROVAL_STEPS.length - 1) && step.user ? (
+                                <Text style={styles.stepUser}>{step.user}</Text>
+                            ) : null}
                         </View>
-                    ))}
-                </View>
+                        {index < APPROVAL_STEPS.length - 1 && (
+                            <View style={[styles.verticalConnector, { backgroundColor: index < currentIndex ? '#7cb518' : '#e0e0e0' }]} />
+                        )}
+                    </React.Fragment>
+                ))}
             </View>
         );
     };
 
     return (
-        <SafeAreaView style={styles.container}>
-            <StatusBar barStyle="light-content" backgroundColor="#6b6b6b" />
+        <MainLayout>
+            <View style={styles.container}>
+                <StatusBar barStyle="light-content" backgroundColor="#6b6b6b" />
 
-            {/* TOP NAV BAR */}
-            <View style={styles.navbar}>
-                <Text style={styles.navTitle}></Text>
-                <Text style={styles.navSubtitle}></Text>
-            </View>
+                {/* HEADER */}
+                <View style={styles.header}>
+                    <TouchableOpacity onPress={() => navigation.goBack()}>
+                        <ArrowBack width={24} height={24} />
+                    </TouchableOpacity>
+                    <Text style={styles.headerTitle}>Travel Settlement</Text>
+                    <View style={{ width: 24 }} />
+                </View>
 
-            {/* BACK */}
-            <TouchableOpacity style={styles.backRow} onPress={() => navigation.goBack()}>
-                <ArrowBack width={24} height={24} style={{ marginRight: 8 }} />
-                <Text style={styles.backText}>Back</Text>
-            </TouchableOpacity>
+                {/* ACTION CARD */}
+                <View style={styles.card}>
+                    {/* Top Row: Search full width */}
+                    <View style={styles.searchRow}>
+                        <View style={styles.searchBoxExpanded}>
+                            <SearchIcon width={20} height={20} style={styles.searchIcon} />
+                            <TextInput
+                                placeholder="Search Here"
+                                placeholderTextColor="#777"
+                                style={styles.searchInput}
+                            />
+                        </View>
+                    </View>
 
-            {/* ACTION CARD */}
-            <View style={styles.card}>
-                {/* Top Row: Search full width */}
-                <View style={styles.searchRow}>
-                    <View style={styles.searchBoxExpanded}>
-                        <SearchIcon width={20} height={20} style={styles.searchIcon} />
-                        <TextInput
-                            placeholder="Search Here"
-                            placeholderTextColor="#777"
-                            style={styles.searchInput}
+                    {/* Bottom Row: Count (left) + Plus Button (right) */}
+                    <View style={styles.bottomRow}>
+                        <View style={styles.countBox}>
+                            <Text style={styles.countText}>Total count - {settlements.length}</Text>
+                        </View>
+
+                        <TouchableOpacity
+                            style={styles.plusBtn}
+                            onPress={() => navigation.navigate('TravelSettlementReport')}
+                        >
+                            <Text style={styles.plusIconText}>+</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+
+                {/* LIST OR EMPTY STATE */}
+                {settlements.length === 0 ? (
+                    <View style={styles.emptyContainer}>
+                        <EmptyImg width="100%" height={300} style={styles.image} />
+                        <Text style={styles.emptyText}>
+                            Give that expense request a kickstart and{"\n"}
+                            let's get you on the move!
+                        </Text>
+                    </View>
+                ) : (
+                    <View style={{ flex: 1, paddingHorizontal: 16 }}>
+                        <FlatList
+                            data={settlements}
+                            keyExtractor={(item) => item.id}
+                            contentContainerStyle={{ paddingTop: 10, paddingBottom: 40 }}
+                            renderItem={({ item }) => (
+                                <View style={styles.ticketCard}>
+                                    {/* Header Strip */}
+                                    <View style={styles.ticketHeader}>
+                                        <View style={styles.headerIdRow}>
+                                            <HeaderDoc width={16} height={16} style={{ marginRight: 6 }} />
+                                            <Text style={styles.headerIdText}>{item.id}</Text>
+                                        </View>
+                                        <HeaderLink width={16} height={16} style={{ marginHorizontal: 10 }} />
+                                        <View style={styles.headerIdRow}>
+                                            <HeaderPlane width={16} height={16} style={{ marginRight: 6 }} />
+                                            <Text style={styles.headerIdText}>{item.ticketId}</Text>
+                                        </View>
+                                    </View>
+
+                                    {/* Ticket Body */}
+                                    <View style={styles.ticketBody}>
+                                        {/* Info Row: Date | Name | Icon */}
+                                        <View style={styles.infoRow}>
+                                            <View style={{ flex: 1 }}>
+                                                <Text style={styles.infoDate}>Travel Date: <Text style={styles.boldText}>{item.submissionDate || '25 Jan 2026'}</Text></Text>
+                                            </View>
+                                            <View style={{ flex: 1 }}>
+                                                <Text style={styles.infoName}>Expense Name: <Text style={styles.boldText}>{item.expenseName}</Text></Text>
+                                            </View>
+                                            <View>
+                                                <ClipboardBadge width={32} height={32} />
+                                            </View>
+                                        </View>
+
+                                        {/* Status Cards Row */}
+                                        <View style={styles.statusRow}>
+                                            {/* Company to Pay */}
+                                            <View style={styles.statusBox}>
+                                                <CompanyPay width={40} height={40} />
+                                                <View style={{ marginLeft: 10 }}>
+                                                    <Text style={styles.statusLabel}>Company to Pay</Text>
+                                                    <Text style={styles.statusAmount}>INR {item.totalAmount.toFixed(2)}</Text>
+                                                </View>
+                                            </View>
+
+                                            {/* Approved */}
+                                            <View style={styles.statusBox}>
+                                                <StatusCheck width={40} height={40} />
+                                                <View style={{ marginLeft: 10 }}>
+                                                    <Text style={styles.statusLabel}>Approved</Text>
+                                                    <Text style={styles.statusAmount}>INR {item.totalAmount.toFixed(2)}</Text>
+                                                </View>
+                                            </View>
+                                        </View>
+
+                                        {/* Approval Chain */}
+                                        {renderApprovalChain()}
+                                    </View>
+                                </View>
+                            )}
                         />
                     </View>
-                </View>
-
-                {/* Bottom Row: Count (left) + Plus Button (right) */}
-                <View style={styles.bottomRow}>
-                    <View style={styles.countBox}>
-                        <Text style={styles.countText}>Total count - {settlements.length}</Text>
-                    </View>
-
-                    <TouchableOpacity
-                        style={styles.plusBtn}
-                        onPress={() => navigation.navigate('TravelSettlementReport')}
-                    >
-                        <Text style={styles.plusIconText}>+</Text>
-                    </TouchableOpacity>
-                </View>
+                )}
             </View>
-
-            {/* LIST OR EMPTY STATE */}
-            {settlements.length === 0 ? (
-                <View style={styles.emptyContainer}>
-                    <EmptyImg width="100%" height={300} style={styles.image} />
-                    <Text style={styles.emptyText}>
-                        Give that expense request a kickstart and{"\n"}
-                        let's get you on the move!
-                    </Text>
-                </View>
-            ) : (
-                <View style={{ flex: 1, paddingHorizontal: 16 }}>
-                    <FlatList
-                        data={settlements}
-                        keyExtractor={(item) => item.id}
-                        contentContainerStyle={{ paddingTop: 10, paddingBottom: 40 }}
-                        renderItem={({ item }) => (
-                            <View style={styles.ticketCard}>
-                                {/* Header Strip */}
-                                <View style={styles.ticketHeader}>
-                                    <View style={styles.headerIdRow}>
-                                        <HeaderDoc width={16} height={16} style={{ marginRight: 6 }} />
-                                        <Text style={styles.headerIdText}>{item.id}</Text>
-                                    </View>
-                                    <HeaderLink width={16} height={16} style={{ marginHorizontal: 10 }} />
-                                    <View style={styles.headerIdRow}>
-                                        <HeaderPlane width={16} height={16} style={{ marginRight: 6 }} />
-                                        <Text style={styles.headerIdText}>{item.ticketId}</Text>
-                                    </View>
-                                </View>
-
-                                {/* Ticket Body */}
-                                <View style={styles.ticketBody}>
-                                    {/* Info Row: Date | Name | Icon */}
-                                    <View style={styles.infoRow}>
-                                        <View style={{ flex: 1 }}>
-                                            <Text style={styles.infoDate}>Travel Date: <Text style={styles.boldText}>{item.submissionDate || '25 Jan 2026'}</Text></Text>
-                                        </View>
-                                        <View style={{ flex: 1 }}>
-                                            <Text style={styles.infoName}>Expense Name: <Text style={styles.boldText}>{item.expenseName}</Text></Text>
-                                        </View>
-                                        <View>
-                                            <ClipboardBadge width={32} height={32} />
-                                        </View>
-                                    </View>
-
-                                    {/* Status Cards Row */}
-                                    <View style={styles.statusRow}>
-                                        {/* Company to Pay */}
-                                        <View style={styles.statusBox}>
-                                            <CompanyPay width={40} height={40} />
-                                            <View style={{ marginLeft: 10 }}>
-                                                <Text style={styles.statusLabel}>Company to Pay</Text>
-                                                <Text style={styles.statusAmount}>INR {item.totalAmount.toFixed(2)}</Text>
-                                            </View>
-                                        </View>
-
-                                        {/* Approved */}
-                                        <View style={styles.statusBox}>
-                                            <StatusCheck width={40} height={40} />
-                                            <View style={{ marginLeft: 10 }}>
-                                                <Text style={styles.statusLabel}>Approved</Text>
-                                                <Text style={styles.statusAmount}>INR {item.totalAmount.toFixed(2)}</Text>
-                                            </View>
-                                        </View>
-                                    </View>
-
-                                    {/* Approval Chain */}
-                                    {renderApprovalChain()}
-                                </View>
-                            </View>
-                        )}
-                    />
-                </View>
-            )}
-        </SafeAreaView>
+        </MainLayout>
     );
 };
-
-
 
 export default TravelSettlement;
 
@@ -206,22 +207,21 @@ const styles = StyleSheet.create({
         backgroundColor: '#ffffff',
     },
 
-    /* NAV BAR */
-    navbar: {
-        backgroundColor: '#6b6b6b',
-        paddingVertical: 10,
+    /* HEADER (New) */
+    header: {
+        flexDirection: 'row',
         alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingHorizontal: 16,
+        paddingVertical: 12,
+        backgroundColor: '#fff',
+        borderBottomWidth: 1,
+        borderBottomColor: '#eee',
     },
-
-    navTitle: {
-        color: '#ffffff',
-        fontSize: 14,
+    headerTitle: {
+        fontSize: 18,
         fontWeight: '600',
-    },
-
-    navSubtitle: {
-        color: '#eaeaea',
-        fontSize: 11,
+        color: '#333',
     },
 
     /* BACK */
@@ -240,16 +240,17 @@ const styles = StyleSheet.create({
     /* ACTION CARD (Search + Total) */
     card: {
         marginHorizontal: 16,
-        padding: 36,
+        marginTop: 16,
+        padding: 24,
         backgroundColor: '#ffffff',
         borderRadius: 16,
 
         shadowColor: '#000',
-        shadowOpacity: 0.15,
+        shadowOpacity: 0.1,
         shadowRadius: 8,
         shadowOffset: { width: 0, height: 4 },
-        elevation: 5,
-        marginBottom: 20, // Add space before list
+        elevation: 4,
+        marginBottom: 20,
     },
 
     /* Search Row */
@@ -259,13 +260,14 @@ const styles = StyleSheet.create({
 
     searchBoxExpanded: {
         width: '100%',
-        height: 54,
+        height: 50,
         borderRadius: 8,
         borderWidth: 1,
-        borderColor: '#ddd',
+        borderColor: '#eee',
         flexDirection: 'row',
         alignItems: 'center',
         paddingHorizontal: 14,
+        backgroundColor: '#f9f9f9',
     },
 
     searchIcon: {
@@ -276,6 +278,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
         flex: 1,
         padding: 0,
+        color: '#333',
     },
 
     /* Bottom Row: Count + Plus Btn */
@@ -290,21 +293,21 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
         justifyContent: 'center',
         borderRadius: 8,
-        height: 54,
+        height: 50,
         marginRight: 12,
     },
 
     countText: {
-        fontSize: 18,
-        fontWeight: '500',
+        fontSize: 16,
+        fontWeight: '600',
         color: '#222',
     },
 
     plusBtn: {
-        width: 54,
-        height: 54,
-        borderRadius: 27, // Circle
-        backgroundColor: '#7cb518',
+        width: 50,
+        height: 50,
+        borderRadius: 25,
+        backgroundColor: '#71B006',
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -313,7 +316,7 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontSize: 28,
         fontWeight: '600',
-        lineHeight: 30, // Center vertically
+        lineHeight: 30,
     },
 
     /* EMPTY STATE */
@@ -339,16 +342,18 @@ const styles = StyleSheet.create({
     ticketCard: {
         backgroundColor: '#fff',
         borderRadius: 12,
-        elevation: 4,
+        elevation: 3,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.15,
-        shadowRadius: 6,
-        marginBottom: 24,
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        marginBottom: 20,
         overflow: 'hidden',
+        borderWidth: 1,
+        borderColor: '#f0f0f0',
     },
     ticketHeader: {
-        backgroundColor: '#555', // Dark Grey Header
+        backgroundColor: '#555',
         flexDirection: 'row',
         alignItems: 'center',
         paddingHorizontal: 16,
@@ -370,90 +375,89 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'flex-start',
-        marginBottom: 24,
+        marginBottom: 20,
     },
     infoDate: {
         fontSize: 12,
         color: '#666',
+        marginBottom: 4,
     },
     infoName: {
         fontSize: 12,
         color: '#666',
+        marginBottom: 4,
     },
     boldText: {
         color: '#222',
-        fontWeight: 'bold',
+        fontWeight: '600',
         fontSize: 14,
     },
     statusRow: {
         flexDirection: 'row',
-        gap: 16, // works in newer RN, fallback margin if needed
-        marginBottom: 30,
+        gap: 12,
+        marginBottom: 24,
     },
     statusBox: {
         flex: 1,
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#fff',
-        padding: 12,
+        backgroundColor: '#f9f9f9',
+        padding: 10,
         borderRadius: 8,
         borderWidth: 1,
         borderColor: '#eee',
-        elevation: 2,
     },
     statusLabel: {
-        fontSize: 12,
-        color: '#555',
-        marginBottom: 4,
+        fontSize: 10,
+        color: '#666',
+        marginBottom: 2,
     },
     statusAmount: {
-        fontSize: 16,
+        fontSize: 14,
         fontWeight: 'bold',
-        color: '#444',
+        color: '#333',
     },
 
     /* STEPS / APPROVAL CHAIN */
-    chainContainer: {
-        marginTop: 10,
-        marginBottom: 10,
-        position: 'relative',
-    },
-    chainLine: {
-        position: 'absolute',
-        top: 36, // Align with center of circles
-        left: 20,
-        right: 20, // Don't go full width so line is hidden behind first/last
-        height: 2,
-        backgroundColor: '#e0e0e0',
-        zIndex: 0,
-    },
-    chainSteps: {
-        flexDirection: 'row',
-        justifyContent: 'space-between', // Spread out
-    },
-    stepWrapper: {
+    approvalChain: {
+        flexDirection: 'column',
         alignItems: 'center',
-        width: 60, // Fixed width for alignment
+        marginTop: 0,
+        marginBottom: 0,
+        paddingHorizontal: 0,
     },
-    stepLabel: {
-        fontSize: 7, // Very small as in image
-        color: '#888',
-        marginBottom: 6,
-        textAlign: 'center',
-        textTransform: 'uppercase',
+    stepContainer: {
+        alignItems: 'center',
+        marginVertical: 2,
+    },
+    verticalConnector: {
+        width: 2,
+        height: 20,
+        backgroundColor: '#e0e0e0',
+        marginVertical: 2,
     },
     stepIconContainer: {
-        width: 24,
-        height: 24,
+        width: 32,
+        height: 32,
+        borderRadius: 16,
+        backgroundColor: '#fff',
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#fff', // to hide line behind
-        zIndex: 1,
-        marginBottom: 6,
+        borderWidth: 2,
+        borderColor: '#e0e0e0',
+        marginBottom: 4,
+    },
+    stepLabel: {
+        fontSize: 10,
+        color: '#888',
+        fontWeight: '600',
+        textAlign: 'center',
+        marginBottom: 2,
     },
     stepUser: {
-        fontSize: 8,
-        color: '#666',
+        fontSize: 12,
+        color: '#333',
+        fontWeight: '500',
         textAlign: 'center',
     },
 });

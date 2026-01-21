@@ -8,7 +8,7 @@ import {
     StatusBar,
     FlatList,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import MainLayout from '../components/MainLayout';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
@@ -34,71 +34,69 @@ const TravelRequestScreen: React.FC = () => {
     );
 
     return (
-        <SafeAreaView style={styles.container}>
-            <StatusBar barStyle="light-content" backgroundColor="#6b6b6b" />
-
-            {/* TOP NAV BAR */}
-            <View style={styles.navbar}>
-                <Text style={styles.navTitle}></Text>
-                <Text style={styles.navSubtitle}></Text>
-            </View>
-
-            {/* BACK */}
-            <TouchableOpacity style={styles.backRow} onPress={() => navigation.goBack()}>
-                <ArrowBack width={24} height={24} style={{ marginRight: 8 }} />
-                <Text style={styles.backText}>Back</Text>
-            </TouchableOpacity>
-
-            {/* ACTION CARD */}
-            <View style={styles.card}>
-                <TouchableOpacity
-                    style={styles.primaryBtn}
-                    onPress={handleCreateTicket}
-                >
-                    <Text style={styles.primaryBtnText}>Create Ticket</Text>
+        <MainLayout>
+            <View style={styles.container}>
+                {/* BACK */}
+                <TouchableOpacity style={styles.backRow} onPress={() => navigation.goBack()}>
+                    <ArrowBack width={24} height={24} style={{ marginRight: 8 }} />
+                    <Text style={styles.backText}>Back</Text>
                 </TouchableOpacity>
 
-                <View style={styles.row}>
-                    <View style={styles.countBox}>
-                        <Text style={styles.countText}>Total count - {tickets.length}</Text>
+                {/* ACTION CARD */}
+                <View style={styles.card}>
+                    {/* Top Row: Search full width */}
+                    <View style={styles.searchRow}>
+                        <View style={styles.searchBoxExpanded}>
+                            <SearchIcon width={20} height={20} style={styles.searchIcon} />
+                            <TextInput
+                                placeholder="Search Here"
+                                placeholderTextColor="#777"
+                                style={styles.searchInput}
+                                value={searchQuery}
+                                onChangeText={setSearchQuery}
+                            />
+                        </View>
                     </View>
 
-                    <View style={styles.searchBox}>
-                        <SearchIcon width={20} height={20} style={styles.searchIcon} />
-                        <TextInput
-                            placeholder="Search Here"
-                            placeholderTextColor="#777"
-                            style={styles.searchInput}
-                            value={searchQuery}
-                            onChangeText={setSearchQuery}
-                        />
+                    {/* Bottom Row: Count (left) + Plus Button (right) */}
+                    <View style={styles.bottomRow}>
+                        <View style={styles.countBox}>
+                            <Text style={styles.countText}>Total count - {tickets.length}</Text>
+                        </View>
+
+                        <TouchableOpacity
+                            style={styles.plusBtn}
+                            onPress={handleCreateTicket}
+                        >
+                            <Text style={styles.plusIconText}>+</Text>
+                        </TouchableOpacity>
                     </View>
                 </View>
+
+                {/* CONTENT: List or Empty State */}
+                {tickets.length === 0 ? (
+                    <View style={styles.emptyContainer}>
+                        <EmptyImg width="100%" height={300} style={styles.image} />
+                        <Text style={styles.emptyText}>
+                            Make a new trip request and get moving!
+                        </Text>
+                    </View>
+                ) : filteredTickets.length === 0 ? (
+                    <View style={styles.emptyContainer}>
+                        <Text style={[styles.emptyText, { fontSize: 18, marginTop: 20 }]}>
+                            NO tickets found
+                        </Text>
+                    </View>
+                ) : (
+                    <FlatList
+                        data={filteredTickets}
+                        keyExtractor={(item) => item.id}
+                        renderItem={({ item }) => <TicketCard ticket={item} />}
+                        contentContainerStyle={{ paddingBottom: 20, paddingTop: 10 }}
+                    />
+                )}
             </View>
-
-            {/* CONTENT: List or Empty State */}
-            {tickets.length === 0 ? (
-                <View style={styles.emptyContainer}>
-                    <EmptyImg width="100%" height={300} style={styles.image} />
-                    <Text style={styles.emptyText}>
-                        Make a new trip request and get moving!
-                    </Text>
-                </View>
-            ) : filteredTickets.length === 0 ? (
-                <View style={styles.emptyContainer}>
-                    <Text style={[styles.emptyText, { fontSize: 18, marginTop: 20 }]}>
-                        NO tickets found
-                    </Text>
-                </View>
-            ) : (
-                <FlatList
-                    data={filteredTickets}
-                    keyExtractor={(item) => item.id}
-                    renderItem={({ item }) => <TicketCard ticket={item} />}
-                    contentContainerStyle={{ paddingBottom: 20, paddingTop: 10 }}
-                />
-            )}
-        </SafeAreaView>
+        </MainLayout>
     );
 };
 
@@ -140,74 +138,83 @@ const styles = StyleSheet.create({
         color: '#222',
     },
 
-    /* CARD */
+    /* ACTION CARD (Search + Total) */
     card: {
         marginHorizontal: 16,
-        padding: 30,
+        padding: 36,
         backgroundColor: '#ffffff',
-        borderRadius: 12,
+        borderRadius: 16,
 
         shadowColor: '#000',
         shadowOpacity: 0.15,
         shadowRadius: 8,
         shadowOffset: { width: 0, height: 4 },
         elevation: 5,
+        marginBottom: 20, // Add space before list
+    },
+
+    /* Search Row */
+    searchRow: {
         marginBottom: 20,
     },
 
-    primaryBtn: {
-        height: 48,
-        backgroundColor: '#7cb518',
-        borderRadius: 6,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginBottom: 16,
-    },
-
-    primaryBtnText: {
-        color: '#fff',
-        fontSize: 15,
-        fontWeight: '600',
-    },
-
-    row: {
-        flexDirection: 'row',
-        gap: 12,
-    },
-
-    countBox: {
-        backgroundColor: '#ffd37d',
-        paddingHorizontal: 14,
-        justifyContent: 'center',
-        borderRadius: 6,
-        height: 44,
-    },
-
-    countText: {
-        fontSize: 16,
-        fontWeight: '500',
-        color: '#222',
-    },
-
-    searchBox: {
-        flex: 1,
-        height: 44,
-        borderRadius: 6,
+    searchBoxExpanded: {
+        width: '100%',
+        height: 54,
+        borderRadius: 8,
         borderWidth: 1,
         borderColor: '#ddd',
         flexDirection: 'row',
         alignItems: 'center',
-        paddingHorizontal: 10,
+        paddingHorizontal: 14,
     },
 
     searchIcon: {
-        marginRight: 8,
+        marginRight: 10,
     },
 
     searchInput: {
-        fontSize: 14,
+        fontSize: 16,
         flex: 1,
         padding: 0,
+    },
+
+    /* Bottom Row: Count + Plus Btn */
+    bottomRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+
+    countBox: {
+        flex: 1,
+        backgroundColor: '#ffd37d',
+        paddingHorizontal: 16,
+        justifyContent: 'center',
+        borderRadius: 8,
+        height: 54,
+        marginRight: 12,
+    },
+
+    countText: {
+        fontSize: 18,
+        fontWeight: '500',
+        color: '#222',
+    },
+
+    plusBtn: {
+        width: 54,
+        height: 54,
+        borderRadius: 27, // Circle
+        backgroundColor: '#7cb518',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+
+    plusIconText: {
+        color: '#fff',
+        fontSize: 28,
+        fontWeight: '600',
+        lineHeight: 30, // Center vertically
     },
 
     /* EMPTY STATE */

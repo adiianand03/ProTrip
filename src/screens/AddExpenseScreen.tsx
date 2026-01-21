@@ -1,14 +1,15 @@
 import React, { useContext, useState } from 'react';
 import {
-    SafeAreaView,
     View,
     Text,
     StyleSheet,
     TouchableOpacity,
     ScrollView,
     TextInput,
+    Platform,
     Alert,
 } from 'react-native';
+import MainLayout from '../components/MainLayout';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
@@ -22,6 +23,10 @@ import HeaderLink from '../assets/images/header_link.svg';
 import HeaderPlane from '../assets/images/header_plane.svg';
 
 import { TicketContext } from '../context/TicketContext';
+import DatePicker from 'react-native-date-picker';
+
+// @ts-ignore
+const DatePickerComponent = (DatePicker as unknown) as React.ComponentType<any>;
 
 type AddExpenseScreenNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 type AddExpenseRouteProp = RouteProp<RootStackParamList, 'AddExpense'>;
@@ -42,6 +47,9 @@ const AddExpenseScreen = () => {
 
     // Dropdown State
     const [openDropdown, setOpenDropdown] = useState<{ rowId: string, field: 'type' | 'currency' } | null>(null);
+
+    // Date Picker State
+    const [datePickerOpen, setDatePickerOpen] = useState<{ rowId: string, open: boolean, date: Date } | null>(null);
 
     // Expenses State
     const [expenses, setExpenses] = useState([
@@ -65,6 +73,10 @@ const AddExpenseScreen = () => {
             setOpenDropdown({ rowId, field });
         }
     };
+
+    const openDatePicker = (rowId: string) => {
+        setDatePickerOpen({ rowId, open: true, date: new Date() });
+    }
 
     const removeExpenseRow = (id: string) => {
         if (expenses.length > 1) {
@@ -107,11 +119,11 @@ const AddExpenseScreen = () => {
 
         addSettlement(newSettlement);
         Alert.alert("Success", "Expense Report Created Successfully");
-        navigation.navigate('TravelSettlement'); // Navigate back to the settlement list
+        navigation.pop(2); // Return to TravelSettlementScreen, closing Report and AddExpense screens
     };
 
     return (
-        <SafeAreaView style={styles.container}>
+        <MainLayout>
             {/* Nav Header */}
             <View style={styles.navbar}>
                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
@@ -221,14 +233,36 @@ const AddExpenseScreen = () => {
                                 </View>
                                 <View style={[styles.inputGroup, { flex: 1 }]}>
                                     <Text style={styles.label}>Date</Text>
-                                    <TextInput
-                                        style={styles.textInput}
-                                        placeholder="YYYY-MM-DD"
-                                        value={item.date}
-                                        onChangeText={(t) => updateExpense(item.id, 'date', t)}
-                                    />
+                                    <TouchableOpacity
+                                        style={styles.dropdownTrigger}
+                                        onPress={() => openDatePicker(item.id)}
+                                    >
+                                        <Text style={{ color: item.date ? '#222' : '#999' }}>
+                                            {item.date || 'Select Date'}
+                                        </Text>
+                                    </TouchableOpacity>
                                 </View>
                             </View>
+
+                            {/* Date Picker Modal */}
+                            {datePickerOpen?.rowId === item.id && (
+                                <DatePickerComponent
+                                    modal
+                                    open={datePickerOpen.open}
+                                    date={datePickerOpen.date}
+                                    mode="date"
+                                    onConfirm={(selectedDate: Date) => {
+                                        setDatePickerOpen(null);
+                                        const options: Intl.DateTimeFormatOptions = { day: '2-digit', month: 'short', year: 'numeric' };
+                                        // Format date as needed, e.g., '25 Jan 2026' or 'YYYY-MM-DD'
+                                        const formattedDate = selectedDate.toLocaleDateString('en-GB', options).replace(/ /g, ' ');
+                                        updateExpense(item.id, 'date', formattedDate);
+                                    }}
+                                    onCancel={() => {
+                                        setDatePickerOpen(null);
+                                    }}
+                                />
+                            )}
 
                             {/* Row 4: Currency & Amount */}
                             <View style={[styles.row, { zIndex: 5 }]}>
@@ -295,14 +329,14 @@ const AddExpenseScreen = () => {
                     <Text style={styles.submitBtnText}>Submit</Text>
                 </TouchableOpacity>
             </View>
-        </SafeAreaView>
+        </MainLayout>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#fff',
+        backgroundColor: '#f5f5f5',
     },
     navbar: {
         height: 56,
