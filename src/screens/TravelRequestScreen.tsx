@@ -14,6 +14,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
 import EmptyImg from '../assets/images/travel.svg';
 import SearchIcon from '../assets/images/search.svg';
+import ArrowBack from '../assets/images/arrow_back.svg';
 import { TicketContext } from '../context/TicketContext';
 import TicketCard from '../components/TicketCard';
 
@@ -22,10 +23,15 @@ type TravelRequestScreenNavigationProp = NativeStackNavigationProp<RootStackPara
 const TravelRequestScreen: React.FC = () => {
     const navigation = useNavigation<TravelRequestScreenNavigationProp>();
     const { tickets } = useContext(TicketContext);
+    const [searchQuery, setSearchQuery] = React.useState('');
 
     const handleCreateTicket = () => {
         navigation.navigate('CreateTicket');
     };
+
+    const filteredTickets = tickets.filter((ticket) =>
+        ticket.id.toLowerCase().includes(searchQuery.toLowerCase())
+    );
 
     return (
         <SafeAreaView style={styles.container}>
@@ -39,7 +45,8 @@ const TravelRequestScreen: React.FC = () => {
 
             {/* BACK */}
             <TouchableOpacity style={styles.backRow} onPress={() => navigation.goBack()}>
-                <Text style={styles.backText}>← Back</Text>
+                <ArrowBack width={24} height={24} style={{ marginRight: 8 }} />
+                <Text style={styles.backText}>Back</Text>
             </TouchableOpacity>
 
             {/* ACTION CARD */}
@@ -62,6 +69,8 @@ const TravelRequestScreen: React.FC = () => {
                             placeholder="Search Here"
                             placeholderTextColor="#777"
                             style={styles.searchInput}
+                            value={searchQuery}
+                            onChangeText={setSearchQuery}
                         />
                     </View>
                 </View>
@@ -75,9 +84,15 @@ const TravelRequestScreen: React.FC = () => {
                         Make a new trip request and get moving!
                     </Text>
                 </View>
+            ) : filteredTickets.length === 0 ? (
+                <View style={styles.emptyContainer}>
+                    <Text style={[styles.emptyText, { fontSize: 18, marginTop: 20 }]}>
+                        NO tickets found
+                    </Text>
+                </View>
             ) : (
                 <FlatList
-                    data={tickets}
+                    data={filteredTickets}
                     keyExtractor={(item) => item.id}
                     renderItem={({ item }) => <TicketCard ticket={item} />}
                     contentContainerStyle={{ paddingBottom: 20, paddingTop: 10 }}
@@ -116,6 +131,8 @@ const styles = StyleSheet.create({
     backRow: {
         paddingHorizontal: 16,
         paddingVertical: 12,
+        flexDirection: 'row',
+        alignItems: 'center',
     },
 
     backText: {

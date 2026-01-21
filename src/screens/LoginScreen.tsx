@@ -7,19 +7,21 @@ import {
     TouchableOpacity,
     Image,
     Alert,
+    Dimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import MobileBg from '../assets/images/mobile-bg.svg';
 import EyeIcon from '../assets/images/eye.svg';
 import EyeOffIcon from '../assets/images/eye-off.svg';
-import Logo from '../assets/images/logo.svg';
+import Logo from '../assets/images/applogo.svg';
 
 const LoginScreen = () => {
     const navigation = useNavigation<any>();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+    const { height: screenHeight } = Dimensions.get('window');
 
     // Hardcoded credentials
     const HARDCODED_EMAIL = 'abc@example.com';
@@ -41,8 +43,8 @@ const LoginScreen = () => {
     return (
         <SafeAreaView style={styles.container}>
             <View style={StyleSheet.absoluteFill}>
-                <MobileBg width="100%" height="55%" preserveAspectRatio="xMidYMin slice" style={{ position: 'absolute', top: 20 }} />
-                <MobileBg width="100%" height="45%" preserveAspectRatio="xMidYMin slice" style={{ position: 'absolute', bottom: 30 }} />
+                <MobileBg width="100%" height="55%" preserveAspectRatio="xMidYMin slice" style={{ position: 'absolute', top: screenHeight * 0.025 }} />
+                <MobileBg width="100%" height="45%" preserveAspectRatio="xMidYMin slice" style={{ position: 'absolute', top: screenHeight * 0.5125 }} />
             </View>
             <View style={styles.content}>
                 {/* Header */}
@@ -170,7 +172,7 @@ const styles = StyleSheet.create({
     button: {
         backgroundColor: '#71B006',
         height: 50,
-        borderRadius: 8,
+        borderRadius: 5,
         justifyContent: 'center',
         alignItems: 'center',
         marginTop: 10,

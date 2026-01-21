@@ -1,34 +1,58 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import {
     View,
     Text,
     StyleSheet,
     TouchableOpacity,
-    TextInput,
-    Platform,
-    Alert,
     FlatList,
-    ScrollView,
-    Modal,
-    ImageBackground,
-    TouchableWithoutFeedback,
-    Keyboard
+    Modal
 } from 'react-native';
-import { TicketContext } from '../context/TicketContext';
-import TravelBg from '../assets/images/travelbginsidecards.png'; // Using provided background
+import TravelBg from '../assets/images/Frame 11810.svg';
+import PlaneIcon from '../assets/images/Frame 11811.svg';
 
-declare const window: any;
-
-interface CreateTicketFormProps {
-    onDiscard: () => void;
-    onSubmit: () => void;
+interface DateItem {
+    day: string;
+    date: number;
+    fullDate: string;
+    month: string;
 }
 
-// Hardcoded Data
+interface CreateTicketFormProps {
+    tripType: 'One Way' | 'Round Trip' | 'Multi-city';
+    setTripType: (type: 'One Way' | 'Round Trip' | 'Multi-city') => void;
+    from: string;
+    setFrom: (val: string) => void;
+    to: string;
+    setTo: (val: string) => void;
+    purpose: string;
+    setPurpose: (val: string) => void;
+    costCode: string;
+    setCostCode: (val: string) => void;
+    startDate: string;
+    setStartDate: (val: string) => void;
+    returnDate: string;
+    setReturnDate: (val: string) => void;
+    dates: DateItem[];
+    // New Preferences Props
+    mode: string;
+    setMode: (val: string) => void;
+    accommodation: string;
+    setAccommodation: (val: string) => void;
+    food: 'Veg' | 'Non-Veg';
+    setFood: (val: 'Veg' | 'Non-Veg') => void;
+    seat: string;
+    setSeat: (val: string) => void;
+    onwardTiming: string;
+    setOnwardTiming: (val: string) => void;
+    returnTiming: string;
+    setReturnTiming: (val: string) => void;
+}
+
 const DESTINATIONS = [
     "Chicago", "New York", "San Francisco", "London", "Paris",
     "Tokyo", "Singapore", "Dubai", "Sydney", "Mumbai",
-    "Berlin", "Toronto", "Hong Kong", "Barcelona", "Rome"
+    "Berlin", "Toronto", "Hong Kong", "Barcelona", "Rome",
+    "New Delhi", "Bengaluru", "Chennai", "Hyderabad", "Pune"
 ];
 const COST_CODES = [
     "CC-101 (Sales)", "CC-102 (Marketing)", "CC-103 (Engineering)",
@@ -39,78 +63,34 @@ const PURPOSES = [
     "Site Visit", "Training", "Team Offsite"
 ];
 
-const CreateTicketForm: React.FC<CreateTicketFormProps> = ({ onDiscard, onSubmit }) => {
-    const { addTicket } = useContext(TicketContext);
+// Preference Options
+const MODES = ["Flight", "Train", "Bus", "Cab"];
+const ACCOMMODATION = ["Not Required", "Hotel", "Guest House"];
+const SEATS = ["No Preference", "Window", "Aisle", "Middle"];
+const TIMINGS = ["Any Timing", "Morning (6AM - 12PM)", "Afternoon (12PM - 6PM)", "Evening (6PM - 12AM)"];
 
-    const [tripType, setTripType] = useState<'One Way' | 'Round Trip'>('One Way');
-    const [from, setFrom] = useState('');
-    const [to, setTo] = useState('');
-    const [purpose, setPurpose] = useState('');
-    const [costCode, setCostCode] = useState('');
+const CreateTicketForm: React.FC<CreateTicketFormProps> = ({
+    tripType, setTripType,
+    from, setFrom,
+    to, setTo,
+    purpose, setPurpose,
+    costCode, setCostCode,
+    startDate, setStartDate,
+    returnDate, setReturnDate,
+    dates,
+    mode, setMode,
+    accommodation, setAccommodation,
+    food, setFood,
+    seat, setSeat,
+    onwardTiming, setOnwardTiming,
+    returnTiming, setReturnTiming
+}) => {
+    const [activeField, setActiveField] = useState<string | null>(null);
 
-    const [startDate, setStartDate] = useState('');
-    const [returnDate, setReturnDate] = useState('');
+    const showDates = from && to;
+    // Show preferences only if Date is selected
+    const showPreferences = showDates && startDate;
 
-    // Modal States
-    const [activeField, setActiveField] = useState<string | null>(null); // 'FROM', 'TO', 'PURPOSE', 'COST'
-
-    // Validation Check
-    const areDetailsFilled = from && to && purpose && costCode;
-
-    // Generate next 30 days
-    const getDates = () => {
-        const dates = [];
-        const today = new Date();
-        for (let i = 0; i < 45; i++) {
-            const date = new Date(today);
-            date.setDate(today.getDate() + i);
-            dates.push({
-                day: date.toLocaleDateString('en-US', { weekday: 'short' }),
-                date: date.getDate(),
-                fullDate: date.toISOString().split('T')[0],
-                month: date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
-            });
-        }
-        return dates;
-    };
-
-    const dates = getDates();
-
-    const handleCreate = () => {
-        if (!areDetailsFilled) {
-            Alert.alert("Missing Details", "Please fill in all details first.");
-            return;
-        }
-        if (!startDate) {
-            Alert.alert("Missing Date", "Please select a departure date.");
-            return;
-        }
-        if (tripType === 'Round Trip' && !returnDate) {
-            Alert.alert("Missing Return Date", "Please select a return date.");
-            return;
-        }
-
-        const newTicket = {
-            id: `TRI/27/${Math.floor(Math.random() * 10000)}`,
-            from,
-            to,
-            date: tripType === 'Round Trip' ? `${startDate} - ${returnDate}` : startDate,
-            purpose,
-            costCode,
-            tripType
-        };
-
-        addTicket(newTicket);
-
-        if (Platform.OS === 'web') {
-            window.alert('Success: Ticket Created');
-        } else {
-            Alert.alert('Success', 'Ticket Created Successfully');
-        }
-        onSubmit();
-    };
-
-    // Generic Selection Modal
     const renderSelectionModal = (
         visible: boolean,
         data: string[],
@@ -146,369 +126,354 @@ const CreateTicketForm: React.FC<CreateTicketFormProps> = ({ onDiscard, onSubmit
     );
 
     return (
-        <View style={styles.mainContainer}>
-            {/* Background Image for Top Part */}
-            <View style={styles.bgContainer}>
-                {/* Can use ImageBackground here if we want it strictly behind the card */}
-            </View>
+        <View style={styles.cardContainer}>
+            {/* Main Card */}
+            <View style={styles.topCard}>
 
-            <ScrollView
-                style={styles.scrollView}
-                contentContainerStyle={styles.scrollContent}
-                showsVerticalScrollIndicator={false}
-            >
-                {/* Top Card */}
-                <View style={styles.topCard}>
-                    {/* Visual Header with Background */}
-                    <ImageBackground
-                        source={TravelBg}
-                        style={styles.headerBg}
-                        imageStyle={{ borderRadius: 20 }}
-                    >
+                {/* SECTION 1: Purpose & Cost */}
+                <View style={styles.upperInputSection}>
+                    <TouchableOpacity style={styles.inputBtn} onPress={() => setActiveField('PURPOSE')}>
+                        <Text style={styles.inputLabel}>Purpose Of Travel</Text>
+                        <Text style={[styles.inputText, !purpose && { color: '#ccc' }]}>{purpose || "Select Purpose"}</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity style={styles.inputBtn} onPress={() => setActiveField('COST')}>
+                        <Text style={styles.inputLabel}>Cost Code</Text>
+                        <Text style={[styles.inputText, !costCode && { color: '#ccc' }]}>{costCode || "Select Cost Code"}</Text>
+                    </TouchableOpacity>
+                </View>
+
+                {/* SECTION 2: Toggle & Route */}
+                <View style={styles.middleSection}>
+                    <View style={styles.toggleRow}>
+                        <TouchableOpacity
+                            style={[styles.toggleBtn, tripType === 'One Way' && styles.activeToggle]}
+                            onPress={() => setTripType('One Way')}
+                        >
+                            <Text style={[styles.toggleText, tripType === 'One Way' && styles.activeToggleText]}>One way</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={[styles.toggleBtn, tripType === 'Round Trip' && styles.activeToggle]}
+                            onPress={() => setTripType('Round Trip')}
+                        >
+                            <Text style={[styles.toggleText, tripType === 'Round Trip' && styles.activeToggleText]}>Round trip</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={[styles.toggleBtn, tripType === 'Multi-city' && styles.activeToggle]}
+                            onPress={() => setTripType('Multi-city')}
+                        >
+                            <Text style={[styles.toggleText, tripType === 'Multi-city' && styles.activeToggleText]}>Multi-city</Text>
+                        </TouchableOpacity>
+                    </View>
+
+                    {/* SVG Background Container */}
+                    <View style={styles.headerBg}>
+                        <TravelBg
+                            width="100%"
+                            height="100%"
+                            preserveAspectRatio="xMidYMid slice"
+                            style={StyleSheet.absoluteFill}
+                        />
+
                         <View style={styles.headerOverlay}>
+
+
                             <View style={styles.routeRow}>
-                                <View>
-                                    <Text style={styles.airportCode}>{from ? from.substring(0, 3).toUpperCase() : 'ORG'}</Text>
-                                    <Text style={styles.cityName}>{from || 'Origin'}</Text>
-                                </View>
+                                <TouchableOpacity style={styles.routeTouch} onPress={() => setActiveField('FROM')}>
+                                    <Text style={[styles.airportCode, from ? { color: '#424242' } : {}]}>
+                                        {from ? from.substring(0, 3).toUpperCase() : '--'}
+                                    </Text>
+                                    <Text style={[styles.cityName, from ? { color: '#424242' } : {}]}>{from || 'From'}</Text>
+                                </TouchableOpacity>
+
                                 <View style={styles.planeLine}>
-                                    <Text style={{ color: '#fff', fontSize: 20 }}>✈️</Text>
-                                    <Text style={{ color: '#eee', fontSize: 10 }}>- - - - - - -</Text>
+                                    <PlaneIcon width={40} height={40} />
                                 </View>
-                                <View>
-                                    <Text style={styles.airportCode}>{to ? to.substring(0, 3).toUpperCase() : 'DST'}</Text>
-                                    <Text style={styles.cityName}>{to || 'Destination'}</Text>
-                                </View>
+
+                                <TouchableOpacity style={styles.routeTouch} onPress={() => setActiveField('TO')}>
+                                    <Text style={[styles.airportCode, to ? { color: '#424242' } : {}]}>
+                                        {to ? to.substring(0, 3).toUpperCase() : '--'}
+                                    </Text>
+                                    <Text style={[styles.cityName, to ? { color: '#424242' } : {}]}>{to || 'To'}</Text>
+                                </TouchableOpacity>
                             </View>
                         </View>
-                    </ImageBackground>
-
-                    {/* Form Inputs */}
-                    <View style={styles.inputContainer}>
-                        <View style={styles.toggleRow}>
-                            <TouchableOpacity
-                                style={[styles.toggleBtn, tripType === 'One Way' && styles.activeToggle]}
-                                onPress={() => setTripType('One Way')}
-                            >
-                                <Text style={[styles.toggleText, tripType === 'One Way' && styles.activeToggleText]}>One way</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                style={[styles.toggleBtn, tripType === 'Round Trip' && styles.activeToggle]}
-                                onPress={() => setTripType('Round Trip')}
-                            >
-                                <Text style={[styles.toggleText, tripType === 'Round Trip' && styles.activeToggleText]}>Round trip</Text>
-                            </TouchableOpacity>
-                        </View>
-
-                        {/* From Input */}
-                        <TouchableOpacity style={styles.inputBtn} onPress={() => setActiveField('FROM')}>
-                            <Text style={[styles.inputText, !from && { color: '#999' }]}>{from || "Select Origin"}</Text>
-                        </TouchableOpacity>
-
-                        {/* To Input */}
-                        <TouchableOpacity style={styles.inputBtn} onPress={() => setActiveField('TO')}>
-                            <Text style={[styles.inputText, !to && { color: '#999' }]}>{to || "Select Destination"}</Text>
-                        </TouchableOpacity>
-
-                        {/* Purpose Input */}
-                        <TouchableOpacity style={styles.inputBtn} onPress={() => setActiveField('PURPOSE')}>
-                            <Text style={[styles.inputText, !purpose && { color: '#999' }]}>{purpose || "Purpose of Travel"}</Text>
-                        </TouchableOpacity>
-
-                        {/* Cost Code Input */}
-                        <TouchableOpacity style={styles.inputBtn} onPress={() => setActiveField('COST')}>
-                            <Text style={[styles.inputText, !costCode && { color: '#999' }]}>{costCode || "Select Cost Code"}</Text>
-                        </TouchableOpacity>
-
                     </View>
                 </View>
+            </View>
 
-                {/* Date Section (Visible only when details filled) */}
-                <View style={[styles.dateSection, !areDetailsFilled && styles.disabledSection]}>
-                    <Text style={styles.sectionTitle}>
-                        {areDetailsFilled ? "Select Departure Date" : "Fill details to select date"}
-                    </Text>
-                    <FlatList
-                        horizontal
-                        data={dates}
-                        keyExtractor={(item) => item.fullDate}
-                        showsHorizontalScrollIndicator={false}
-                        contentContainerStyle={{ paddingHorizontal: 20 }}
-                        scrollEnabled={!!areDetailsFilled}
-                        renderItem={({ item }) => (
-                            <TouchableOpacity
-                                style={[
-                                    styles.dateItem,
-                                    startDate === item.fullDate && styles.selectedDateItem,
-                                    !areDetailsFilled && styles.disabledItem
-                                ]}
-                                onPress={() => areDetailsFilled && setStartDate(item.fullDate)}
-                                disabled={!areDetailsFilled}
-                            >
-                                <Text style={[styles.dayText, startDate === item.fullDate && styles.selectedDayText]}>{item.day}</Text>
-                                <Text style={[styles.dateNum, startDate === item.fullDate && styles.selectedDayText]}>{item.date}</Text>
-                            </TouchableOpacity>
-                        )}
-                    />
-                </View>
-
-                {/* Return Date Section (Visible only for Round Trip & details filled) */}
-                {tripType === 'Round Trip' && (
-                    <View style={[styles.dateSection, (!areDetailsFilled || !startDate) && styles.disabledSection]}>
-                        <Text style={styles.sectionTitle}>
-                            {startDate ? "Select Return Date" : "Select Departure first"}
-                        </Text>
+            {/* Date Section */}
+            {showDates && (
+                <View style={styles.dateContainer}>
+                    <View style={styles.dateSection}>
+                        <Text style={styles.sectionTitle}>Select Departure Date</Text>
                         <FlatList
                             horizontal
                             data={dates}
-                            keyExtractor={(item) => 'ret-' + item.fullDate}
+                            keyExtractor={(item) => item.fullDate}
                             showsHorizontalScrollIndicator={false}
-                            contentContainerStyle={{ paddingHorizontal: 20 }}
-                            scrollEnabled={!!startDate}
+                            contentContainerStyle={{ paddingHorizontal: 0 }}
                             renderItem={({ item }) => (
                                 <TouchableOpacity
                                     style={[
                                         styles.dateItem,
-                                        returnDate === item.fullDate && styles.selectedDateItem,
-                                        (!startDate) && styles.disabledItem
+                                        startDate === item.fullDate && styles.selectedDateItem
                                     ]}
-                                    onPress={() => startDate && setReturnDate(item.fullDate)}
-                                    disabled={!startDate}
+                                    onPress={() => setStartDate(item.fullDate)}
                                 >
-                                    <Text style={[styles.dayText, returnDate === item.fullDate && styles.selectedDayText]}>{item.day}</Text>
-                                    <Text style={[styles.dateNum, returnDate === item.fullDate && styles.selectedDayText]}>{item.date}</Text>
+                                    <Text style={[styles.dayText, startDate === item.fullDate && styles.selectedDayText]}>{item.day}</Text>
+                                    <Text style={[styles.dateNum, startDate === item.fullDate && styles.selectedDayText]}>{item.date}</Text>
                                 </TouchableOpacity>
                             )}
                         />
                     </View>
-                )}
 
-                {/* Submit Button */}
-                <View style={styles.actionSection}>
-                    <TouchableOpacity
-                        style={[styles.searchBtn, (!areDetailsFilled || !startDate) && styles.disabledBtn]}
-                        onPress={handleCreate}
-                        disabled={!areDetailsFilled || !startDate}
-                    >
-                        <Text style={styles.searchBtnText}>Create Ticket</Text>
-                    </TouchableOpacity>
+                    {tripType === 'Round Trip' && startDate && (
+                        <View style={styles.dateSection}>
+                            <Text style={styles.sectionTitle}>Select Return Date</Text>
+                            <FlatList
+                                horizontal
+                                data={dates}
+                                keyExtractor={(item) => 'ret-' + item.fullDate}
+                                showsHorizontalScrollIndicator={false}
+                                contentContainerStyle={{ paddingHorizontal: 0 }}
+                                renderItem={({ item }) => (
+                                    <TouchableOpacity
+                                        style={[
+                                            styles.dateItem,
+                                            returnDate === item.fullDate && styles.selectedDateItem
+                                        ]}
+                                        onPress={() => setReturnDate(item.fullDate)}
+                                    >
+                                        <Text style={[styles.dayText, returnDate === item.fullDate && styles.selectedDayText]}>{item.day}</Text>
+                                        <Text style={[styles.dateNum, returnDate === item.fullDate && styles.selectedDayText]}>{item.date}</Text>
+                                    </TouchableOpacity>
+                                )}
+                            />
+                        </View>
+                    )}
                 </View>
+            )}
 
-            </ScrollView>
+            {/* PREFERENCES SECTION (New) */}
+            {showPreferences && (
+                <View style={styles.preferencesContainer}>
+                    <View style={styles.prefHeaderPill}>
+                        <Text style={styles.prefHeaderText}>You can edit your preference here</Text>
+                    </View>
+
+                    <View style={styles.prefCard}>
+                        {/* Row 1 */}
+                        <View style={styles.prefRow}>
+                            {/* Mode */}
+                            <TouchableOpacity style={styles.prefItem} onPress={() => setActiveField('MODE')}>
+                                <Text style={styles.prefLabel}>Mode of Travel*</Text>
+                                <Text style={styles.prefValue}>{mode} ⌄</Text>
+                            </TouchableOpacity>
+
+                            {/* Accommodation */}
+                            <TouchableOpacity style={styles.prefItem} onPress={() => setActiveField('ACCOM')}>
+                                <Text style={styles.prefLabel}>Accommodation</Text>
+                                <Text style={styles.prefValue}>{accommodation} ⌄</Text>
+                            </TouchableOpacity>
+
+                            {/* Food Toggle */}
+                            <View style={styles.prefItem}>
+                                <Text style={styles.prefLabel}>Food</Text>
+                                <View style={styles.foodToggleContainer}>
+                                    <TouchableOpacity
+                                        style={[styles.foodOption, food === 'Veg' && styles.foodActive]}
+                                        onPress={() => setFood('Veg')}
+                                    >
+                                        <Text style={[styles.foodText, food === 'Veg' && styles.foodActiveText]}>Veg</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity
+                                        style={[styles.foodOption, food === 'Non-Veg' && styles.foodActive]}
+                                        onPress={() => setFood('Non-Veg')}
+                                    >
+                                        <Text style={[styles.foodText, food === 'Non-Veg' && styles.foodActiveText]}>Non-Veg</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+                        </View>
+
+                        {/* Row 2 */}
+                        <View style={styles.prefRow}>
+                            {/* Seat */}
+                            <TouchableOpacity style={styles.prefItem} onPress={() => setActiveField('SEAT')}>
+                                <Text style={styles.prefLabel}>Seat (i)</Text>
+                                <Text style={styles.prefValue}>{seat} ⌄</Text>
+                            </TouchableOpacity>
+
+                            {/* Onward Timing */}
+                            <TouchableOpacity style={styles.prefItem} onPress={() => setActiveField('ONWARD_TIME')}>
+                                <Text style={styles.prefLabel}>Onward Timing</Text>
+                                <Text style={styles.prefValue}>{onwardTiming} ⌄</Text>
+                            </TouchableOpacity>
+                        </View>
+
+                        {/* Return Timing (Conditional) */}
+                        {tripType === 'Round Trip' && (
+                            <View style={styles.prefRow}>
+                                <TouchableOpacity style={[styles.prefItem, { flex: 1 }]} onPress={() => setActiveField('RETURN_TIME')}>
+                                    <Text style={styles.prefLabel}>Return Timing</Text>
+                                    <Text style={styles.prefValue}>{returnTiming} ⌄</Text>
+                                </TouchableOpacity>
+                            </View>
+                        )}
+                    </View>
+                </View>
+            )}
+
 
             {/* Modals */}
             {renderSelectionModal(activeField === 'FROM', DESTINATIONS, setFrom, 'Origin')}
             {renderSelectionModal(activeField === 'TO', DESTINATIONS, setTo, 'Destination')}
             {renderSelectionModal(activeField === 'PURPOSE', PURPOSES, setPurpose, 'Purpose')}
             {renderSelectionModal(activeField === 'COST', COST_CODES, setCostCode, 'Cost Code')}
+
+            {/* Preference Modals */}
+            {renderSelectionModal(activeField === 'MODE', MODES, setMode, 'Mode of Travel')}
+            {renderSelectionModal(activeField === 'ACCOM', ACCOMMODATION, setAccommodation, 'Accommodation')}
+            {renderSelectionModal(activeField === 'SEAT', SEATS, setSeat, 'Seat Preference')}
+            {renderSelectionModal(activeField === 'ONWARD_TIME', TIMINGS, setOnwardTiming, 'Onward Timing')}
+            {renderSelectionModal(activeField === 'RETURN_TIME', TIMINGS, setReturnTiming, 'Return Timing')}
         </View>
     );
 };
 
 const styles = StyleSheet.create({
-    mainContainer: {
-        flex: 1,
-        backgroundColor: '#f8f8f0',
-    },
-    bgContainer: {
-        ...StyleSheet.absoluteFillObject,
-        backgroundColor: '#f8f8f0',
-        zIndex: -1,
-    },
-    scrollView: {
-        flex: 1,
-    },
-    scrollContent: {
-        flexGrow: 1,
-        justifyContent: 'center', // Centers the card vertically
-        paddingBottom: 40,
+    cardContainer: {
+        marginBottom: 20,
     },
     topCard: {
         backgroundColor: '#fff',
-        margin: 16,
+        marginHorizontal: 16,
+        marginBottom: 20,
         borderRadius: 20,
         elevation: 4,
         shadowColor: '#000',
         shadowOpacity: 0.1,
         shadowRadius: 10,
-        overflow: 'hidden', // for ImageBackground border radius
-    },
-    headerBg: {
-        height: 120, // Background height
-        justifyContent: 'center',
-    },
-    headerOverlay: {
-        backgroundColor: 'rgba(0,0,0,0.3)', // Darken image slightly
-        flex: 1,
-        justifyContent: 'center',
         padding: 20,
-    },
-    routeRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        width: '100%',
-    },
-    airportCode: {
-        fontSize: 28,
-        fontWeight: 'bold',
-        color: '#fff',
-        textAlign: 'center',
-        textShadowColor: 'rgba(0,0,0,0.5)',
-        textShadowRadius: 4,
-    },
-    cityName: {
-        fontSize: 14,
-        color: '#eee',
-        textAlign: 'center',
-        fontWeight: '500',
-    },
-    planeLine: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    inputContainer: {
-        padding: 20,
-        gap: 12,
-        backgroundColor: '#fff',
-    },
-    toggleRow: {
-        flexDirection: 'row',
-        backgroundColor: '#f0f0f0',
-        borderRadius: 25,
-        padding: 4,
-        alignSelf: 'center',
-        marginBottom: 10,
-        width: '100%',
-    },
-    toggleBtn: {
-        flex: 1,
-        paddingVertical: 10,
-        borderRadius: 20,
-        alignItems: 'center',
-    },
-    activeToggle: {
-        backgroundColor: '#112211', // Dark Theme
-    },
-    toggleText: {
-        color: '#555',
-        fontWeight: '600',
-    },
-    activeToggleText: {
-        color: '#fff',
-    },
-    inputBtn: {
-        backgroundColor: '#f9f9f9',
-        padding: 16,
-        borderRadius: 12,
-        borderWidth: 1,
-        borderColor: '#eee',
-    },
-    inputText: {
-        fontSize: 14,
-        color: '#333',
     },
 
-    dateSection: {
+    // ... Existing Styles ... (Copied from previous functionality)
+    upperInputSection: { marginBottom: 20, gap: 12 },
+    inputBtn: { borderBottomWidth: 1, borderBottomColor: '#eee', paddingVertical: 10 },
+    inputLabel: { fontSize: 12, color: '#888', marginBottom: 4, fontWeight: '600' },
+    inputText: { fontSize: 16, color: '#333', fontWeight: '500' },
+    middleSection: { gap: 16 },
+    toggleRow: { flexDirection: 'row', backgroundColor: '#f0f0f0', borderRadius: 25, padding: 4 },
+    toggleBtn: { flex: 1, paddingVertical: 10, borderRadius: 20, alignItems: 'center' },
+    activeToggle: { backgroundColor: '#71B006' },
+    toggleText: { color: '#555', fontWeight: '600', fontSize: 12 },
+    activeToggleText: { color: '#fff' },
+    headerBg: { height: 100, justifyContent: 'center', marginTop: 10, borderRadius: 12, overflow: 'hidden' },
+    headerOverlay: { flex: 1, justifyContent: 'center', paddingHorizontal: 20, borderRadius: 12 },
+    routeRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+    routeTouch: { alignItems: 'center', padding: 10 },
+    airportCode: { fontSize: 36, fontWeight: '900', color: '#71B006', textAlign: 'center' },
+    cityName: { fontSize: 14, color: '#555', fontWeight: '600', textAlign: 'center' },
+    planeLine: { flex: 1, alignItems: 'center' },
+    dateContainer: { marginHorizontal: 16, marginBottom: 10 },
+    dateSection: { marginBottom: 20 },
+    sectionTitle: { fontSize: 16, fontWeight: 'bold', color: '#222', marginBottom: 10 },
+    dateItem: { backgroundColor: '#fff', width: 60, height: 75, justifyContent: 'center', alignItems: 'center', borderRadius: 16, marginRight: 10, borderWidth: 1, borderColor: '#eee' },
+    selectedDateItem: { backgroundColor: '#71B006', borderColor: '#71B006' },
+    dayText: { fontSize: 12, color: '#888', marginBottom: 4 },
+    dateNum: { fontSize: 20, fontWeight: 'bold', color: '#333' },
+    selectedDayText: { color: '#fff' },
+
+    // PREFERENCES
+    preferencesContainer: {
+        marginHorizontal: 16,
         marginBottom: 20,
     },
-    disabledSection: {
-        opacity: 0.3,
+    prefHeaderPill: {
+        backgroundColor: '#F5A623', // Orange-ish from Image
+        paddingVertical: 8,
+        paddingHorizontal: 16,
+        borderTopLeftRadius: 20,
+        borderTopRightRadius: 20,
+        alignSelf: 'flex-start',
+        marginBottom: -10, // Overlap slightly or just sit on top
+        zIndex: 1,
     },
-    sectionTitle: {
-        fontSize: 16,
+    prefHeaderText: {
+        color: '#fff',
         fontWeight: 'bold',
-        color: '#222',
-        marginLeft: 20,
-        marginBottom: 10,
+        fontSize: 12,
     },
-    dateItem: {
+    prefCard: {
         backgroundColor: '#fff',
-        width: 60,
-        height: 75,
-        justifyContent: 'center',
-        alignItems: 'center',
-        borderRadius: 16,
-        marginRight: 10,
+        borderRadius: 12,
+        borderTopLeftRadius: 0, // Visual style
+        padding: 16,
+        elevation: 3,
+        shadowColor: '#000',
+        shadowOpacity: 0.1,
+        shadowRadius: 5,
         borderWidth: 1,
         borderColor: '#eee',
     },
-    disabledItem: {
-        backgroundColor: '#e0e0e0',
+    prefRow: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'space-between',
+        marginBottom: 16,
+        gap: 10,
     },
-    selectedDateItem: {
-        backgroundColor: '#acc938', // Lime Green
-        borderColor: '#acc938',
+    prefItem: {
+        flex: 1, // Distribute evenly
+        minWidth: '30%',
+        borderRightWidth: 1,
+        borderRightColor: '#eee',
+        paddingRight: 8,
     },
-    dayText: {
-        fontSize: 12,
-        color: '#888',
+    prefLabel: {
+        fontSize: 10,
+        color: '#555',
         marginBottom: 4,
+        fontWeight: '600',
     },
-    dateNum: {
-        fontSize: 20,
-        fontWeight: 'bold',
+    prefValue: {
+        fontSize: 14,
         color: '#333',
+        fontWeight: '500',
     },
-    selectedDayText: {
-        color: '#fff',
+    // Food Toggle
+    foodToggleContainer: {
+        flexDirection: 'row',
+        backgroundColor: '#ddd',
+        borderRadius: 4,
+        overflow: 'hidden',
+        height: 30,
+        width: 100,
     },
-    actionSection: {
-        paddingHorizontal: 16,
-    },
-    searchBtn: {
-        backgroundColor: '#acc938',
-        padding: 18,
-        borderRadius: 16,
-        alignItems: 'center',
-        shadowColor: '#acc938',
-        shadowOpacity: 0.4,
-        shadowRadius: 10,
-        shadowOffset: { width: 0, height: 4 },
-        elevation: 6,
-    },
-    disabledBtn: {
-        backgroundColor: '#ccc',
-        shadowOpacity: 0,
-        elevation: 0,
-    },
-    searchBtnText: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: '#fff',
-    },
-
-    // Modal Styles
-    modalOverlay: {
+    foodOption: {
         flex: 1,
-        backgroundColor: 'rgba(0,0,0,0.5)',
         justifyContent: 'center',
         alignItems: 'center',
     },
-    modalContent: {
-        width: '80%',
-        backgroundColor: '#fff',
-        borderRadius: 20,
-        padding: 20,
-        maxHeight: '60%',
+    foodActive: {
+        backgroundColor: '#71B006', // Green
     },
-    modalTitle: {
-        fontSize: 18,
+    foodText: {
+        fontSize: 10,
         fontWeight: 'bold',
-        marginBottom: 15,
-        textAlign: 'center',
+        color: '#555',
     },
-    modalItem: {
-        paddingVertical: 15,
-        borderBottomWidth: 1,
-        borderBottomColor: '#eee',
+    foodActiveText: {
+        color: '#fff',
     },
-    modalItemText: {
-        fontSize: 16,
-        color: '#333',
-        textAlign: 'center',
-    },
+
+    // Modal
+    modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center' },
+    modalContent: { width: '80%', backgroundColor: '#fff', borderRadius: 20, padding: 20, maxHeight: '60%' },
+    modalTitle: { fontSize: 18, fontWeight: 'bold', marginBottom: 15, textAlign: 'center' },
+    modalItem: { paddingVertical: 15, borderBottomWidth: 1, borderBottomColor: '#eee' },
+    modalItemText: { fontSize: 16, color: '#333', textAlign: 'center' },
 });
 
 export default CreateTicketForm;

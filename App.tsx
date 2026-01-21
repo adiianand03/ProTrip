@@ -21,6 +21,7 @@ import DummyScreen from './src/screens/DummyScreen';
 import TravelSettlementScreen from './src/screens/TravelSettlementScreen';
 import TravelSettlementReport from './src/screens/TravelSettlementReport';
 import CreateTicketScreen from './src/screens/CreateTicketScreen';
+import AddExpenseScreen from './src/screens/AddExpenseScreen';
 
 export type RootStackParamList = {
   Login: undefined;
@@ -30,6 +31,7 @@ export type RootStackParamList = {
   Dummy: undefined;
   TravelSettlement: undefined;
   TravelSettlementReport: undefined;
+  AddExpense: { eriId: string; expenseName: string; ticketId: string };
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -52,6 +54,7 @@ function App(): React.JSX.Element {
             <Stack.Screen name="Dummy" component={DummyScreen} />
             <Stack.Screen name="TravelSettlement" component={TravelSettlementScreen} />
             <Stack.Screen name="TravelSettlementReport" component={TravelSettlementReport} />
+            <Stack.Screen name="AddExpense" component={AddExpenseScreen} />
           </Stack.Navigator>
         </NavigationContainer>
       </TicketProvider>

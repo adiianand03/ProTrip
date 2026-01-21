@@ -8,6 +8,7 @@ import {
     StatusBar,
     Alert,
     Platform,
+    Dimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import DashboardCard from '../components/DashboardCard';
@@ -32,6 +33,7 @@ interface HomeScreenProps { }
 const HomeScreen: React.FC<HomeScreenProps> = () => {
     const navigation = useNavigation<HomeScreenNavigationProp>();
     const [isProfileOpen, setIsProfileOpen] = React.useState(false);
+    const { height: screenHeight } = Dimensions.get('window');
 
     const handleHomePress = () => {
         // Already on home, maybe scroll to top or no-op
@@ -68,8 +70,11 @@ const HomeScreen: React.FC<HomeScreenProps> = () => {
 
     return (
         <SafeAreaView style={styles.container}>
-            <View style={[StyleSheet.absoluteFill, { top: '10%' }]}>
-                <MobileBg width="100%" height="100%" preserveAspectRatio="xMidYMin slice" />
+            <View style={StyleSheet.absoluteFill}>
+                <MobileBg width="100%" height="55%" preserveAspectRatio="xMidYMin slice" style={{ position: 'absolute', top: screenHeight * 0.025 }} />
+                <MobileBg width="100%" height="35%" preserveAspectRatio="xMidYMin slice" style={{ position: 'absolute', top: screenHeight * 0.6125 }} />
+                <MobileBg width="100%" height="20%" preserveAspectRatio="xMidYMin slice" style={{ position: 'absolute', top: screenHeight * 0.7875 }} />
+
             </View>
             <StatusBar barStyle="light-content" backgroundColor="#4A4A4A" />
 
@@ -119,8 +124,9 @@ const HomeScreen: React.FC<HomeScreenProps> = () => {
 
                 <DashboardCard
                     title="Travel Request"
+                    // Pass component
                     Icon={TravelRequestIcon}
-                    onPress={handleTravelRequestPress}
+                    onPress={() => navigation.navigate('CreateTicket')}
                 />
 
                 <DashboardCard

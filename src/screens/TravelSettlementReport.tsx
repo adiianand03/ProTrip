@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import {
     SafeAreaView,
     View,
@@ -9,10 +9,12 @@ import {
     TextInput,
     Platform,
     Alert,
+    FlatList
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
+import { TicketContext } from '../context/TicketContext';
 
 const bgImg = require('../assets/images/travelbginsidecards.png');
 
@@ -22,15 +24,27 @@ type TravelSettlementReportNavigationProp = NativeStackNavigationProp<RootStackP
 
 const TravelSettlementReport = () => {
     const navigation = useNavigation<TravelSettlementReportNavigationProp>();
+    const { tickets } = useContext(TicketContext);
     const [open, setOpen] = useState(false);
 
+    // Form State
+    const [expenseName, setExpenseName] = useState('');
+    const [selectedTicketId, setSelectedTicketId] = useState('');
+
     const handleSubmit = () => {
-        if (Platform.OS === 'web') {
-            window.alert('Success: Settlement Created Successfully');
-        } else {
-            Alert.alert('Success', 'Settlement Created Successfully');
+        if (!expenseName || !selectedTicketId) {
+            Alert.alert("Missing Details", "Please enter an expense name and select a travel request.");
+            return;
         }
-        navigation.navigate('Home');
+
+        // Generate ERI ID
+        const eriId = `ERI/27/${Math.floor(Math.random() * 10000)}`;
+
+        navigation.navigate('AddExpense', {
+            eriId,
+            expenseName,
+            ticketId: selectedTicketId
+        });
     };
 
     return (
@@ -57,6 +71,8 @@ const TravelSettlementReport = () => {
                     <TextInput
                         placeholder="Expense name"
                         style={styles.input}
+                        value={expenseName}
+                        onChangeText={setExpenseName}
                     />
 
                     {/* Travel Request Number */}
@@ -71,17 +87,34 @@ const TravelSettlementReport = () => {
                             activeOpacity={0.8}
                             onPress={() => setOpen(!open)}
                         >
-                            <Text style={styles.dropdownText}>
-                                Select Travel Request Number
+                            <Text style={[styles.dropdownText, !selectedTicketId && { color: '#999' }]}>
+                                {selectedTicketId || 'Select Travel Request Number'}
                             </Text>
                             <Text style={styles.arrow}>{open ? '▲' : '▼'}</Text>
                         </TouchableOpacity>
 
                         {open && (
                             <View style={styles.dropdownPopup}>
-                                <Text style={styles.noOption}>
-                                    No available options
-                                </Text>
+                                {tickets.length === 0 ? (
+                                    <Text style={styles.noOption}>No available options</Text>
+                                ) : (
+                                    <FlatList
+                                        data={tickets}
+                                        keyExtractor={(item) => item.id}
+                                        renderItem={({ item }) => (
+                                            <TouchableOpacity
+                                                style={styles.dropdownItem}
+                                                onPress={() => {
+                                                    setSelectedTicketId(item.id);
+                                                    setOpen(false);
+                                                }}
+                                            >
+                                                <Text style={styles.dropdownItemText}>{item.id} ({item.to})</Text>
+                                            </TouchableOpacity>
+                                        )}
+                                        style={{ maxHeight: 150 }}
+                                    />
+                                )}
                             </View>
                         )}
                     </View>
@@ -199,6 +232,17 @@ const styles = StyleSheet.create({
 
         elevation: 10,
         zIndex: 1000,
+    },
+
+    dropdownItem: {
+        paddingVertical: 12,
+        borderBottomWidth: 1,
+        borderBottomColor: '#f0f0f0',
+    },
+
+    dropdownItemText: {
+        fontSize: 14,
+        color: '#333',
     },
 
     noOption: {
