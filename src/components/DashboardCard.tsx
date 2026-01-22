@@ -37,14 +37,14 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
 
 const styles = StyleSheet.create({
   cardContainer: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#F5F5F5',
     borderRadius: 15,
     marginVertical: 10,
     width: '90%',
     maxWidth: 340,
     alignSelf: 'center',
     height: 340, // Further increased height to ensure no clipping
-    shadowColor: '#000',
+    shadowColor: '#424242',
     shadowOffset: {
       width: 0,
       height: 4,
@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#ABCDAA',
+    color: '#b3e0a3',
     marginBottom: 10, // Reduced margin
     textAlign: 'center',
     textTransform: 'none',

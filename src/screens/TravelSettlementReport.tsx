@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import {
-    SafeAreaView,
     View,
     Text,
     StyleSheet,
@@ -9,10 +8,13 @@ import {
     TextInput,
     Platform,
     Alert,
+    FlatList
 } from 'react-native';
+import MainLayout from '../components/MainLayout';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
+import { TicketContext } from '../context/TicketContext';
 
 const bgImg = require('../assets/images/travelbginsidecards.png');
 
@@ -22,28 +24,42 @@ type TravelSettlementReportNavigationProp = NativeStackNavigationProp<RootStackP
 
 const TravelSettlementReport = () => {
     const navigation = useNavigation<TravelSettlementReportNavigationProp>();
+    const { tickets } = useContext(TicketContext);
     const [open, setOpen] = useState(false);
 
+    // Form State
+    const [expenseName, setExpenseName] = useState('');
+    const [selectedTicketId, setSelectedTicketId] = useState('');
+
     const handleSubmit = () => {
-        if (Platform.OS === 'web') {
-            window.alert('Success: Settlement Created Successfully');
-        } else {
-            Alert.alert('Success', 'Settlement Created Successfully');
+        if (!expenseName || !selectedTicketId) {
+            Alert.alert("Missing Details", "Please enter an expense name and select a travel request.");
+            return;
         }
-        navigation.navigate('Home');
+
+        // Generate ERI ID
+        const eriId = `ERI / 27 / ${Math.floor(Math.random() * 10000)} `;
+
+        navigation.navigate('AddExpense', {
+            eriId,
+            expenseName,
+            ticketId: selectedTicketId
+        });
     };
 
     return (
-        <SafeAreaView style={{ flex: 1 }}>
-            {/* NAV BAR */}
-            <View style={styles.navbar} />
-
-            <ImageBackground source={bgImg} style={styles.bg} resizeMode="cover">
-                {/* BACK */}
-                <TouchableOpacity onPress={() => navigation.goBack()}>
-                    <Text style={styles.backText}>← Back</Text>
-                </TouchableOpacity>
-
+        <MainLayout>
+            <View style={styles.container}>
+                {/* Header */}
+                <View style={styles.header}>
+                    <TouchableOpacity onPress={() => navigation.goBack()} style={{ padding: 5 }}>
+                        <Text style={{ fontSize: 24, color: '#616161' }}>←</Text>
+                    </TouchableOpacity>
+                    <Text style={styles.headerTitle}>Travel Settlement</Text>
+                    <TouchableOpacity onPress={() => navigation.navigate('TravelSettlement')}>
+                        <Text style={{ color: '#74c657', fontWeight: 'bold' }}>My Settlements</Text>
+                    </TouchableOpacity>
+                </View>
                 {/* CARD */}
                 <View style={styles.card}>
                     <Text style={styles.heading}>
@@ -57,6 +73,8 @@ const TravelSettlementReport = () => {
                     <TextInput
                         placeholder="Expense name"
                         style={styles.input}
+                        value={expenseName}
+                        onChangeText={setExpenseName}
                     />
 
                     {/* Travel Request Number */}
@@ -71,17 +89,34 @@ const TravelSettlementReport = () => {
                             activeOpacity={0.8}
                             onPress={() => setOpen(!open)}
                         >
-                            <Text style={styles.dropdownText}>
-                                Select Travel Request Number
+                            <Text style={[styles.dropdownText, !selectedTicketId && { color: '#BDBDBD' }]}>
+                                {selectedTicketId || 'Select Travel Request Number'}
                             </Text>
                             <Text style={styles.arrow}>{open ? '▲' : '▼'}</Text>
                         </TouchableOpacity>
 
                         {open && (
                             <View style={styles.dropdownPopup}>
-                                <Text style={styles.noOption}>
-                                    No available options
-                                </Text>
+                                {tickets.length === 0 ? (
+                                    <Text style={styles.noOption}>No available options</Text>
+                                ) : (
+                                    <FlatList
+                                        data={tickets}
+                                        keyExtractor={(item) => item.id}
+                                        renderItem={({ item }) => (
+                                            <TouchableOpacity
+                                                style={styles.dropdownItem}
+                                                onPress={() => {
+                                                    setSelectedTicketId(item.id);
+                                                    setOpen(false);
+                                                }}
+                                            >
+                                                <Text style={styles.dropdownItemText}>{item.id} ({item.to})</Text>
+                                            </TouchableOpacity>
+                                        )}
+                                        style={{ maxHeight: 150 }}
+                                    />
+                                )}
                             </View>
                         )}
                     </View>
@@ -100,8 +135,8 @@ const TravelSettlementReport = () => {
                         </TouchableOpacity>
                     </View>
                 </View>
-            </ImageBackground>
-        </SafeAreaView>
+            </View>
+        </MainLayout>
     );
 };
 
@@ -111,7 +146,7 @@ const styles = StyleSheet.create({
     /* NAV BAR */
     navbar: {
         height: 56,
-        backgroundColor: '#6b6b6b',
+        backgroundColor: '#757575',
     },
 
     bg: {
@@ -126,7 +161,7 @@ const styles = StyleSheet.create({
 
     /* CARD */
     card: {
-        backgroundColor: '#fff',
+        backgroundColor: '#F5F5F5',
         borderRadius: 14,
         padding: 20,
         elevation: 6,
@@ -149,7 +184,7 @@ const styles = StyleSheet.create({
 
     input: {
         borderBottomWidth: 1,
-        borderColor: '#ccc',
+        borderColor: '#E0E0E0',
         marginBottom: 20,
         paddingVertical: 6,
     },
@@ -162,24 +197,24 @@ const styles = StyleSheet.create({
 
     dropdown: {
         borderWidth: 1,
-        borderColor: '#7cc000',
+        borderColor: '#74c657',
         borderRadius: 6,
         paddingHorizontal: 12,
         paddingVertical: 14,
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        backgroundColor: '#fff',
+        backgroundColor: '#F5F5F5',
     },
 
     dropdownText: {
-        color: '#555',
+        color: '#757575',
         fontSize: 14,
     },
 
     arrow: {
         fontSize: 12,
-        color: '#555',
+        color: '#757575',
     },
 
     dropdownPopup: {
@@ -187,12 +222,12 @@ const styles = StyleSheet.create({
         top: 52,
         left: 0,
         right: 0,
-        backgroundColor: '#fff',
+        backgroundColor: '#F5F5F5',
         borderRadius: 8,
         paddingVertical: 14,
         paddingHorizontal: 16,
 
-        shadowColor: '#000',
+        shadowColor: '#424242',
         shadowOpacity: 0.2,
         shadowRadius: 10,
         shadowOffset: { width: 0, height: 4 },
@@ -201,9 +236,20 @@ const styles = StyleSheet.create({
         zIndex: 1000,
     },
 
+    dropdownItem: {
+        paddingVertical: 12,
+        borderBottomWidth: 1,
+        borderBottomColor: '#F5F5F5',
+    },
+
+    dropdownItemText: {
+        fontSize: 14,
+        color: '#616161',
+    },
+
     noOption: {
         fontSize: 14,
-        color: '#555',
+        color: '#757575',
     },
 
     /* BUTTONS */
@@ -215,26 +261,45 @@ const styles = StyleSheet.create({
 
     cancelBtn: {
         borderWidth: 1,
-        borderColor: '#7cc000',
+        borderColor: '#74c657',
         paddingVertical: 12,
         paddingHorizontal: 40,
         borderRadius: 6,
     },
 
     cancelText: {
-        color: '#7cc000',
+        color: '#74c657',
         fontWeight: '500',
     },
 
     submitBtn: {
-        backgroundColor: '#7cc000',
+        backgroundColor: '#74c657',
         paddingVertical: 12,
         paddingHorizontal: 40,
         borderRadius: 6,
     },
 
     submitText: {
-        color: '#fff',
+        color: '#F5F5F5',
         fontWeight: '600',
+    },
+    container: {
+        flex: 1,
+        backgroundColor: '#F5F5F5',
+    },
+    header: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingHorizontal: 20,
+        paddingVertical: 15,
+        backgroundColor: '#F5F5F5',
+        borderBottomWidth: 1,
+        borderBottomColor: '#EEEEEE',
+    },
+    headerTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#616161',
     },
 });

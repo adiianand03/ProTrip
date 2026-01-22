@@ -8,9 +8,11 @@ import {
     StatusBar,
     Alert,
     Platform,
+    Dimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import DashboardCard from '../components/DashboardCard';
+import MainLayout from '../components/MainLayout';
 
 declare const window: any;
 
@@ -32,6 +34,7 @@ interface HomeScreenProps { }
 const HomeScreen: React.FC<HomeScreenProps> = () => {
     const navigation = useNavigation<HomeScreenNavigationProp>();
     const [isProfileOpen, setIsProfileOpen] = React.useState(false);
+    const { height: screenHeight } = Dimensions.get('window');
 
     const handleHomePress = () => {
         // Already on home, maybe scroll to top or no-op
@@ -67,148 +70,112 @@ const HomeScreen: React.FC<HomeScreenProps> = () => {
     };
 
     return (
-        <SafeAreaView style={styles.container}>
-            <View style={[StyleSheet.absoluteFill, { top: '10%' }]}>
-                <MobileBg width="100%" height="100%" preserveAspectRatio="xMidYMin slice" />
-            </View>
-            <StatusBar barStyle="light-content" backgroundColor="#4A4A4A" />
+        <MainLayout showProfileInDrawer={true}>
+            <ScrollView
+                style={styles.container}
+                contentContainerStyle={{ paddingBottom: 30 }}
+                showsVerticalScrollIndicator={false}
+            >
 
-            {/* Header */}
-            <View style={styles.header}>
-                <View style={styles.headerLeft}>
-                    <TouchableOpacity onPress={handleHomePress}>
-                        <Text style={styles.headerIcon}>🏠</Text>
-                    </TouchableOpacity>
-                    <Text style={styles.headerTitle}>Expenses</Text>
-                    <View style={styles.iconButton}>
-                        {/* Visual only, not clickable */}
-                        <UploadIcon width={34} height={34} preserveAspectRatio="xMidYMid meet" />
-                    </View>
+
+                {/* Dashboard Grid */}
+                <View style={styles.gridContainer}>
+                    <DashboardCard
+                        title="Travel Request"
+                        Icon={TravelRequestIcon}
+                        onPress={() => navigation.navigate('CreateTicket')}
+                    />
+                    <DashboardCard
+                        title="Travel Settlement"
+                        Icon={ExpenseReportIcon}
+                        onPress={() => navigation.navigate('TravelSettlementReport')}
+                    />
                 </View>
-                <View style={styles.headerRight}>
-                    <TouchableOpacity onPress={handleChatPress} style={styles.iconButton}>
-                        <ChatQnaIcon width={30} height={30} />
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={handleProfilePress} style={styles.iconButton}>
-                        <ProfileIcon width={30} height={30} />
-                    </TouchableOpacity>
-                </View>
-            </View>
-
-            {isProfileOpen && (
-                <View style={styles.dropdown}>
-                    <TouchableOpacity style={styles.dropdownItem} onPress={() => handleProfileOption('Settings')}>
-                        <Text style={styles.dropdownText}>Settings</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.dropdownItem} onPress={() => handleProfileOption('Help')}>
-                        <Text style={styles.dropdownText}>Help</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.dropdownItem} onPress={() => handleProfileOption('LogOut')}>
-                        <Text style={styles.dropdownText}>Log Out</Text>
-                    </TouchableOpacity>
-                </View>
-            )}
-
-            {/* Main Content */}
-            <ScrollView contentContainerStyle={styles.scrollContent}>
-
-                {/* Decorative background elements can be added here if needed, 
-            but the design shows a clean background with some subtle clouds/lines.
-            We will keep it clean white/grey for now or add a subtle background color.
-        */}
-
-                <DashboardCard
-                    title="Travel Request"
-                    Icon={TravelRequestIcon}
-                    onPress={handleTravelRequestPress}
-                />
-
-                <DashboardCard
-                    title="Travel Settlement"
-                    Icon={ExpenseReportIcon}
-                    onPress={handleExpenseReportPress}
-                />
 
             </ScrollView>
-        </SafeAreaView>
+        </MainLayout>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        // backgroundColor: '#F5F5F5', // Removed for SVG background
+        // backgroundColor: '#F5F5F5',
     },
     header: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        backgroundColor: '#4A4A4A', // Dark grey/black header
-        paddingHorizontal: 15,
-        paddingVertical: 12,
-        borderBottomWidth: 1,
-        borderBottomColor: '#333',
-    },
-    headerLeft: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    headerTitle: {
-        color: '#FFFFFF',
-        fontSize: 20,
-        fontWeight: 'normal',
-        marginLeft: 10,
-        marginRight: 10,
-    },
-    headerIcon: {
-        fontSize: 24,
-        color: '#FFFFFF',
-        marginLeft: 15,
-    },
-    headerIconSmall: {
-        fontSize: 16,
-        color: '#FFFFFF',
-    },
-    uploadIconContainer: {
-        backgroundColor: '#669900', // Green box for upload
-        padding: 4,
-        borderRadius: 4,
-        marginLeft: 5,
-    },
-    headerRight: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    scrollContent: {
+        paddingHorizontal: 20,
         paddingVertical: 20,
+    },
+    welcomeText: {
+        fontSize: 14,
+        color: '#9E9E9E',
+    },
+    userName: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#616161',
+    },
+    gridContainer: {
+        marginBottom: 20,
+    },
+    sectionHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
         alignItems: 'center',
+        paddingHorizontal: 20,
+        marginBottom: 10,
     },
-    iconButton: {
-        marginLeft: 15,
-        padding: 5,
-    },
-    dropdown: {
-        position: 'absolute',
-        top: 60,
-        right: 15,
-        backgroundColor: 'white',
-        borderRadius: 5,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
-        elevation: 5,
-        zIndex: 1000,
-        width: 150,
-    },
-    dropdownItem: {
-        padding: 10,
-        borderBottomWidth: 1,
-        borderBottomColor: '#eee',
-    },
-    dropdownText: {
+    sectionTitle: {
         fontSize: 16,
-        color: '#333',
+        fontWeight: 'bold',
+        color: '#616161',
+    },
+    viewAllText: {
+        fontSize: 14,
+        color: '#74c657',
+    },
+    activityCard: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#F5F5F5',
+        marginHorizontal: 20,
+        marginBottom: 10,
+        padding: 15,
+        borderRadius: 12,
+        shadowColor: '#424242',
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        shadowOffset: { width: 0, height: 2 },
+        elevation: 2,
+    },
+    activityIcon: {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        backgroundColor: '#b3e0a3',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginRight: 15,
+    },
+    activityContent: {
+        flex: 1,
+    },
+    activityTitle: {
+        fontSize: 14,
+        fontWeight: 'bold',
+        color: '#616161',
+    },
+    activityDate: {
+        fontSize: 12,
+        color: '#BDBDBD',
+    },
+    activityStatus: {
+        fontSize: 12,
+        fontWeight: 'bold',
+        color: '#f39c12',
     },
 });
 

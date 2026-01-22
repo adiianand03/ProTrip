@@ -58,13 +58,13 @@ const TicketCard: React.FC<TicketCardProps> = ({ ticket }) => {
 
 const styles = StyleSheet.create({
     card: {
-        backgroundColor: '#fff',
+        backgroundColor: '#F5F5F5',
         borderRadius: 12,
         marginHorizontal: 16,
         marginBottom: 16,
         padding: 16,
         elevation: 4,
-        shadowColor: '#000',
+        shadowColor: '#424242',
         shadowOpacity: 0.1,
         shadowRadius: 6,
         shadowOffset: { width: 0, height: 2 },
@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
     header: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        backgroundColor: '#555',
+        backgroundColor: '#757575',
         marginHorizontal: -16,
         marginTop: -16,
         padding: 12,
@@ -81,11 +81,11 @@ const styles = StyleSheet.create({
         marginBottom: 16,
     },
     idText: {
-        color: '#fff',
+        color: '#F5F5F5',
         fontWeight: 'bold',
     },
     typeText: {
-        color: '#ccc',
+        color: '#E0E0E0',
         fontSize: 12,
     },
     body: {
@@ -98,11 +98,11 @@ const styles = StyleSheet.create({
     dateText: {
         fontSize: 16,
         fontWeight: 'bold',
-        color: '#333',
+        color: '#616161',
     },
     label: {
         fontSize: 12,
-        color: '#888',
+        color: '#BDBDBD',
     },
     routeContainer: {
         flexDirection: 'row',
@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
     cityText: {
         fontSize: 18,
         fontWeight: '600',
-        color: '#333',
+        color: '#616161',
     },
     icon: {
         // color: '#555'
@@ -134,14 +134,14 @@ const styles = StyleSheet.create({
         width: 14,
         height: 14,
         borderRadius: 7,
-        backgroundColor: '#ddd',
+        backgroundColor: '#E0E0E0',
         marginBottom: 4,
     },
     activeCircle: {
-        backgroundColor: '#7cb518',
+        backgroundColor: '#74c657',
     },
     pendingCircle: {
-        backgroundColor: '#ffd37d',
+        backgroundColor: '#f39c12',
     },
     line: {
         flex: 1,
@@ -152,12 +152,12 @@ const styles = StyleSheet.create({
     },
     stepLabel: {
         fontSize: 10,
-        color: '#555',
+        color: '#757575',
         fontWeight: '600',
     },
     personParams: {
         fontSize: 9,
-        color: '#888',
+        color: '#BDBDBD',
     }
 });
 

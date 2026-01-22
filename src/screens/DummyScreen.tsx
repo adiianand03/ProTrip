@@ -24,21 +24,21 @@ const DummyScreen = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#fff',
+        backgroundColor: '#F5F5F5',
     },
     header: {
         flexDirection: 'row',
         alignItems: 'center',
         padding: 16,
         borderBottomWidth: 1,
-        borderBottomColor: '#eee',
+        borderBottomColor: '#EEEEEE',
     },
     backButton: {
         marginRight: 16,
     },
     backText: {
         fontSize: 16,
-        color: '#007AFF',
+        color: '#74c657',
     },
     title: {
         fontSize: 18,
@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
     },
     text: {
         fontSize: 16,
-        color: '#666',
+        color: '#9E9E9E',
     },
 });
 
