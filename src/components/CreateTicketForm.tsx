@@ -46,6 +46,14 @@ interface CreateTicketFormProps {
     setOnwardTiming: (val: string) => void;
     returnTiming: string;
     setReturnTiming: (val: string) => void;
+    // Multi-City Props
+    segments?: {
+        id: string; from: string; to: string; date: string;
+        mode: string; accommodation: string; food: string; seat: string; onwardTiming: string;
+    }[];
+    addSegment?: () => void;
+    removeSegment?: (id: string) => void;
+    updateSegment?: (id: string, field: string, value: string) => void;
 }
 
 const DESTINATIONS = [
@@ -83,13 +91,27 @@ const CreateTicketForm: React.FC<CreateTicketFormProps> = ({
     food, setFood,
     seat, setSeat,
     onwardTiming, setOnwardTiming,
-    returnTiming, setReturnTiming
+    returnTiming, setReturnTiming,
+    // Destructure new props
+    segments, addSegment, removeSegment, updateSegment
 }) => {
     const [activeField, setActiveField] = useState<string | null>(null);
+    const [activeSegmentId, setActiveSegmentId] = useState<string | null>(null); // For tracking which segment is active
 
-    const showDates = from && to;
-    // Show preferences only if Date is selected
-    const showPreferences = showDates && startDate;
+    const lastSegment = segments && segments.length > 0 ? segments[segments.length - 1] : null;
+
+    // Show dates validation
+    const showDates = (tripType === 'Multi-city')
+        ? (segments && segments.some(s => s.id === activeSegmentId || s.id === lastSegment?.id))
+        : (from && to);
+
+    // Show preferences logic
+    const showPreferences = (tripType === 'Multi-city')
+        ? (lastSegment && lastSegment.from && lastSegment.to && lastSegment.date)
+        : (showDates && startDate);
+
+    // Check if adding new trip is allowed
+    const canAddTrip = tripType === 'Multi-city' && showPreferences;
 
     const renderSelectionModal = (
         visible: boolean,
@@ -101,7 +123,10 @@ const CreateTicketForm: React.FC<CreateTicketFormProps> = ({
             <TouchableOpacity
                 style={styles.modalOverlay}
                 activeOpacity={1}
-                onPress={() => setActiveField(null)}
+                onPress={() => {
+                    setActiveField(null);
+                    setActiveSegmentId(null);
+                }}
             >
                 <View style={styles.modalContent}>
                     <Text style={styles.modalTitle}>Select {title}</Text>
@@ -114,6 +139,7 @@ const CreateTicketForm: React.FC<CreateTicketFormProps> = ({
                                 onPress={() => {
                                     onSelect(item);
                                     setActiveField(null);
+                                    setActiveSegmentId(null);
                                 }}
                             >
                                 <Text style={styles.modalItemText}>{item}</Text>
@@ -143,7 +169,7 @@ const CreateTicketForm: React.FC<CreateTicketFormProps> = ({
                     </TouchableOpacity>
                 </View>
 
-                {/* SECTION 2: Toggle & Route */}
+                {/* SECTION 2: Toggle */}
                 <View style={styles.middleSection}>
                     <View style={styles.toggleRow}>
                         <TouchableOpacity
@@ -166,178 +192,361 @@ const CreateTicketForm: React.FC<CreateTicketFormProps> = ({
                         </TouchableOpacity>
                     </View>
 
-                    {/* SVG Background Container */}
-                    <View style={styles.headerBg}>
-                        <TravelBg
-                            width="100%"
-                            height="100%"
-                            preserveAspectRatio="xMidYMid slice"
-                            style={StyleSheet.absoluteFill}
-                        />
+                    {/* DYNAMIC CONTENT AREA */}
+                    {tripType === 'Multi-city' && segments ? (
+                        // ================= MULTI-CITY FLOW =================
+                        <View style={styles.multiCityContainer}>
+                            {segments.map((seg, index) => {
+                                const isSegmentFilled = seg.from && seg.to && seg.date;
 
-                        <View style={styles.headerOverlay}>
+                                return (
+                                    <View key={seg.id} style={styles.segmentBlock}>
+                                        <View style={styles.segmentHeader}>
+                                            <Text style={styles.segmentTitle}>Trip {index + 1}</Text>
+                                            {segments.length > 1 && index === segments.length - 1 && (
+                                                <TouchableOpacity onPress={() => removeSegment && removeSegment(seg.id)}>
+                                                    <Text style={{ color: 'red', fontSize: 12 }}>Remove</Text>
+                                                </TouchableOpacity>
+                                            )}
+                                        </View>
 
+                                        {/* ROUTE ROW */}
+                                        <View style={styles.headerBg}>
+                                            <TravelBg
+                                                width="100%"
+                                                height="100%"
+                                                preserveAspectRatio="xMidYMid slice"
+                                                style={StyleSheet.absoluteFill}
+                                            />
+                                            <View style={styles.headerOverlay}>
+                                                <View style={styles.routeRow}>
+                                                    <TouchableOpacity
+                                                        style={styles.routeTouch}
+                                                        onPress={() => {
+                                                            setActiveSegmentId(seg.id);
+                                                            setActiveField('FROM_SEG');
+                                                        }}
+                                                    >
+                                                        <Text style={[styles.airportCode, seg.from ? { color: '#424242' } : {}]}>
+                                                            {seg.from ? seg.from.substring(0, 3).toUpperCase() : '--'}
+                                                        </Text>
+                                                        <Text style={[styles.cityName, seg.from ? { color: '#424242' } : {}]}>{seg.from || 'From'}</Text>
+                                                    </TouchableOpacity>
 
-                            <View style={styles.routeRow}>
-                                <TouchableOpacity style={styles.routeTouch} onPress={() => setActiveField('FROM')}>
-                                    <Text style={[styles.airportCode, from ? { color: '#424242' } : {}]}>
-                                        {from ? from.substring(0, 3).toUpperCase() : '--'}
-                                    </Text>
-                                    <Text style={[styles.cityName, from ? { color: '#424242' } : {}]}>{from || 'From'}</Text>
-                                </TouchableOpacity>
+                                                    <View style={styles.planeLine}>
+                                                        <PlaneIcon width={30} height={30} />
+                                                    </View>
 
-                                <View style={styles.planeLine}>
-                                    <PlaneIcon width={40} height={40} />
-                                </View>
+                                                    <TouchableOpacity
+                                                        style={styles.routeTouch}
+                                                        onPress={() => {
+                                                            setActiveSegmentId(seg.id);
+                                                            setActiveField('TO_SEG');
+                                                        }}
+                                                    >
+                                                        <Text style={[styles.airportCode, seg.to ? { color: '#424242' } : {}]}>
+                                                            {seg.to ? seg.to.substring(0, 3).toUpperCase() : '--'}
+                                                        </Text>
+                                                        <Text style={[styles.cityName, seg.to ? { color: '#424242' } : {}]}>{seg.to || 'To'}</Text>
+                                                    </TouchableOpacity>
+                                                </View>
+                                            </View>
+                                        </View>
 
-                                <TouchableOpacity style={styles.routeTouch} onPress={() => setActiveField('TO')}>
-                                    <Text style={[styles.airportCode, to ? { color: '#424242' } : {}]}>
-                                        {to ? to.substring(0, 3).toUpperCase() : '--'}
-                                    </Text>
-                                    <Text style={[styles.cityName, to ? { color: '#424242' } : {}]}>{to || 'To'}</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    </View>
-                </View>
-            </View>
+                                        {/* DATE SELECTION (Specific to Segment) */}
+                                        <View style={{ marginTop: 15 }}>
+                                            <Text style={styles.sectionTitle}>Select Departure Date</Text>
+                                            <FlatList
+                                                horizontal
+                                                data={dates}
+                                                keyExtractor={(item) => item.fullDate}
+                                                showsHorizontalScrollIndicator={false}
+                                                contentContainerStyle={{ paddingHorizontal: 0 }}
+                                                renderItem={({ item }) => {
+                                                    const isSelected = seg.date === item.fullDate;
+                                                    return (
+                                                        <TouchableOpacity
+                                                            style={[styles.dateItem, isSelected && styles.selectedDateItem]}
+                                                            onPress={() => updateSegment && updateSegment(seg.id, 'date', item.fullDate)}
+                                                        >
+                                                            <Text style={[styles.dayText, isSelected && styles.selectedDayText]}>{item.day}</Text>
+                                                            <Text style={[styles.dateNum, isSelected && styles.selectedDayText]}>{item.date}</Text>
+                                                        </TouchableOpacity>
+                                                    );
+                                                }}
+                                            />
+                                        </View>
 
-            {/* Date Section */}
-            {showDates && (
-                <View style={styles.dateContainer}>
-                    <View style={styles.dateSection}>
-                        <Text style={styles.sectionTitle}>Select Departure Date</Text>
-                        <FlatList
-                            horizontal
-                            data={dates}
-                            keyExtractor={(item) => item.fullDate}
-                            showsHorizontalScrollIndicator={false}
-                            contentContainerStyle={{ paddingHorizontal: 0 }}
-                            renderItem={({ item }) => (
-                                <TouchableOpacity
-                                    style={[
-                                        styles.dateItem,
-                                        startDate === item.fullDate && styles.selectedDateItem
-                                    ]}
-                                    onPress={() => setStartDate(item.fullDate)}
-                                >
-                                    <Text style={[styles.dayText, startDate === item.fullDate && styles.selectedDayText]}>{item.day}</Text>
-                                    <Text style={[styles.dateNum, startDate === item.fullDate && styles.selectedDayText]}>{item.date}</Text>
+                                        {/* PREFERENCES (Per Segment) */}
+                                        {isSegmentFilled && (
+                                            <View style={styles.preferencesContainer}>
+                                                <View style={styles.prefHeaderPill}>
+                                                    <Text style={styles.prefHeaderText}>Preferences for Trip {index + 1}</Text>
+                                                </View>
+
+                                                <View style={styles.prefCard}>
+                                                    {/* Row 1 */}
+                                                    <View style={styles.prefRow}>
+                                                        <TouchableOpacity style={styles.prefItem} onPress={() => { setActiveSegmentId(seg.id); setActiveField('MODE_SEG'); }}>
+                                                            <Text style={styles.prefLabel}>Mode*</Text>
+                                                            <Text style={styles.prefValue}>{seg.mode || 'Flight'} ⌄</Text>
+                                                        </TouchableOpacity>
+
+                                                        <TouchableOpacity style={styles.prefItem} onPress={() => { setActiveSegmentId(seg.id); setActiveField('ACCOM_SEG'); }}>
+                                                            <Text style={styles.prefLabel}>Accom.</Text>
+                                                            <Text style={styles.prefValue}>{seg.accommodation || 'Not Req'} ⌄</Text>
+                                                        </TouchableOpacity>
+
+                                                        <View style={styles.prefItem}>
+                                                            <Text style={styles.prefLabel}>Food</Text>
+                                                            <View style={styles.foodToggleContainer}>
+                                                                <TouchableOpacity
+                                                                    style={[styles.foodOption, seg.food === 'Veg' && styles.foodActive]}
+                                                                    onPress={() => updateSegment && updateSegment(seg.id, 'food', 'Veg')}
+                                                                >
+                                                                    <Text style={[styles.foodText, seg.food === 'Veg' && styles.foodActiveText]}>Veg</Text>
+                                                                </TouchableOpacity>
+                                                                <TouchableOpacity
+                                                                    style={[styles.foodOption, seg.food === 'Non-Veg' && styles.foodActive]}
+                                                                    onPress={() => updateSegment && updateSegment(seg.id, 'food', 'Non-Veg')}
+                                                                >
+                                                                    <Text style={[styles.foodText, seg.food === 'Non-Veg' && styles.foodActiveText]}>Non-Veg</Text>
+                                                                </TouchableOpacity>
+                                                            </View>
+                                                        </View>
+                                                    </View>
+
+                                                    {/* Row 2 */}
+                                                    <View style={styles.prefRow}>
+                                                        <TouchableOpacity style={styles.prefItem} onPress={() => { setActiveSegmentId(seg.id); setActiveField('SEAT_SEG'); }}>
+                                                            <Text style={styles.prefLabel}>Seat</Text>
+                                                            <Text style={styles.prefValue}>{seg.seat || 'No Pref'} ⌄</Text>
+                                                        </TouchableOpacity>
+
+                                                        <TouchableOpacity style={styles.prefItem} onPress={() => { setActiveSegmentId(seg.id); setActiveField('TIMING_SEG'); }}>
+                                                            <Text style={styles.prefLabel}>Timing</Text>
+                                                            <Text style={styles.prefValue}>{seg.onwardTiming || 'Any'} ⌄</Text>
+                                                        </TouchableOpacity>
+                                                    </View>
+                                                </View>
+                                            </View>
+                                        )}
+                                    </View>
+                                );
+                            })}
+
+                            {/* ADD TRIP BUTTON */}
+                            {lastSegment && lastSegment.from && lastSegment.to && lastSegment.date && (
+                                <TouchableOpacity style={styles.addTripBtn} onPress={addSegment}>
+                                    <Text style={styles.addTripText}>+ Add another trip</Text>
                                 </TouchableOpacity>
                             )}
-                        />
-                    </View>
-
-                    {tripType === 'Round Trip' && startDate && (
-                        <View style={styles.dateSection}>
-                            <Text style={styles.sectionTitle}>Select Return Date</Text>
-                            <FlatList
-                                horizontal
-                                data={dates}
-                                keyExtractor={(item) => 'ret-' + item.fullDate}
-                                showsHorizontalScrollIndicator={false}
-                                contentContainerStyle={{ paddingHorizontal: 0 }}
-                                renderItem={({ item }) => (
-                                    <TouchableOpacity
-                                        style={[
-                                            styles.dateItem,
-                                            returnDate === item.fullDate && styles.selectedDateItem
-                                        ]}
-                                        onPress={() => setReturnDate(item.fullDate)}
-                                    >
-                                        <Text style={[styles.dayText, returnDate === item.fullDate && styles.selectedDayText]}>{item.day}</Text>
-                                        <Text style={[styles.dateNum, returnDate === item.fullDate && styles.selectedDayText]}>{item.date}</Text>
-                                    </TouchableOpacity>
-                                )}
-                            />
                         </View>
-                    )}
-                </View>
-            )}
+                    ) : (
+                        // ================= STANDARD FLOW (One Way / Round Trip) =================
+                        <>
+                            {/* SVG Background Container */}
+                            <View style={styles.headerBg}>
+                                <TravelBg
+                                    width="100%"
+                                    height="100%"
+                                    preserveAspectRatio="xMidYMid slice"
+                                    style={StyleSheet.absoluteFill}
+                                />
 
-            {/* PREFERENCES SECTION (New) */}
-            {showPreferences && (
-                <View style={styles.preferencesContainer}>
-                    <View style={styles.prefHeaderPill}>
-                        <Text style={styles.prefHeaderText}>You can edit your preference here</Text>
-                    </View>
+                                <View style={styles.headerOverlay}>
+                                    <View style={styles.routeRow}>
+                                        <TouchableOpacity style={styles.routeTouch} onPress={() => setActiveField('FROM')}>
+                                            <Text style={[styles.airportCode, from ? { color: '#424242' } : {}]}>
+                                                {from ? from.substring(0, 3).toUpperCase() : '--'}
+                                            </Text>
+                                            <Text style={[styles.cityName, from ? { color: '#424242' } : {}]}>{from || 'From'}</Text>
+                                        </TouchableOpacity>
 
-                    <View style={styles.prefCard}>
-                        {/* Row 1 */}
-                        <View style={styles.prefRow}>
-                            {/* Mode */}
-                            <TouchableOpacity style={styles.prefItem} onPress={() => setActiveField('MODE')}>
-                                <Text style={styles.prefLabel}>Mode of Travel*</Text>
-                                <Text style={styles.prefValue}>{mode} ⌄</Text>
-                            </TouchableOpacity>
+                                        <View style={styles.planeLine}>
+                                            <PlaneIcon width={40} height={40} />
+                                        </View>
 
-                            {/* Accommodation */}
-                            <TouchableOpacity style={styles.prefItem} onPress={() => setActiveField('ACCOM')}>
-                                <Text style={styles.prefLabel}>Accommodation</Text>
-                                <Text style={styles.prefValue}>{accommodation} ⌄</Text>
-                            </TouchableOpacity>
-
-                            {/* Food Toggle */}
-                            <View style={styles.prefItem}>
-                                <Text style={styles.prefLabel}>Food</Text>
-                                <View style={styles.foodToggleContainer}>
-                                    <TouchableOpacity
-                                        style={[styles.foodOption, food === 'Veg' && styles.foodActive]}
-                                        onPress={() => setFood('Veg')}
-                                    >
-                                        <Text style={[styles.foodText, food === 'Veg' && styles.foodActiveText]}>Veg</Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity
-                                        style={[styles.foodOption, food === 'Non-Veg' && styles.foodActive]}
-                                        onPress={() => setFood('Non-Veg')}
-                                    >
-                                        <Text style={[styles.foodText, food === 'Non-Veg' && styles.foodActiveText]}>Non-Veg</Text>
-                                    </TouchableOpacity>
+                                        <TouchableOpacity style={styles.routeTouch} onPress={() => setActiveField('TO')}>
+                                            <Text style={[styles.airportCode, to ? { color: '#424242' } : {}]}>
+                                                {to ? to.substring(0, 3).toUpperCase() : '--'}
+                                            </Text>
+                                            <Text style={[styles.cityName, to ? { color: '#424242' } : {}]}>{to || 'To'}</Text>
+                                        </TouchableOpacity>
+                                    </View>
                                 </View>
                             </View>
-                        </View>
 
-                        {/* Row 2 */}
-                        <View style={styles.prefRow}>
-                            {/* Seat */}
-                            <TouchableOpacity style={styles.prefItem} onPress={() => setActiveField('SEAT')}>
-                                <Text style={styles.prefLabel}>Seat (i)</Text>
-                                <Text style={styles.prefValue}>{seat} ⌄</Text>
-                            </TouchableOpacity>
+                            {/* Date Section */}
+                            {showDates && (
+                                <View style={styles.dateContainer}>
+                                    <View style={styles.dateSection}>
+                                        <Text style={styles.sectionTitle}>Select Departure Date</Text>
+                                        <FlatList
+                                            horizontal
+                                            data={dates}
+                                            keyExtractor={(item) => item.fullDate}
+                                            showsHorizontalScrollIndicator={false}
+                                            contentContainerStyle={{ paddingHorizontal: 0 }}
+                                            renderItem={({ item }) => (
+                                                <TouchableOpacity
+                                                    style={[styles.dateItem, startDate === item.fullDate && styles.selectedDateItem]}
+                                                    onPress={() => setStartDate(item.fullDate)}
+                                                >
+                                                    <Text style={[styles.dayText, startDate === item.fullDate && styles.selectedDayText]}>{item.day}</Text>
+                                                    <Text style={[styles.dateNum, startDate === item.fullDate && styles.selectedDayText]}>{item.date}</Text>
+                                                </TouchableOpacity>
+                                            )}
+                                        />
+                                    </View>
 
-                            {/* Onward Timing */}
-                            <TouchableOpacity style={styles.prefItem} onPress={() => setActiveField('ONWARD_TIME')}>
-                                <Text style={styles.prefLabel}>Onward Timing</Text>
-                                <Text style={styles.prefValue}>{onwardTiming} ⌄</Text>
-                            </TouchableOpacity>
-                        </View>
+                                    {tripType === 'Round Trip' && (
+                                        <View style={styles.dateSection}>
+                                            <Text style={styles.sectionTitle}>Select Return Date</Text>
+                                            <FlatList
+                                                horizontal
+                                                data={dates}
+                                                keyExtractor={(item) => 'ret-' + item.fullDate}
+                                                showsHorizontalScrollIndicator={false}
+                                                contentContainerStyle={{ paddingHorizontal: 0 }}
+                                                renderItem={({ item }) => (
+                                                    <TouchableOpacity
+                                                        style={[styles.dateItem, returnDate === item.fullDate && styles.selectedDateItem]}
+                                                        onPress={() => setReturnDate(item.fullDate)}
+                                                    >
+                                                        <Text style={[styles.dayText, returnDate === item.fullDate && styles.selectedDayText]}>{item.day}</Text>
+                                                        <Text style={[styles.dateNum, returnDate === item.fullDate && styles.selectedDayText]}>{item.date}</Text>
+                                                    </TouchableOpacity>
+                                                )}
+                                            />
+                                        </View>
+                                    )}
+                                </View>
+                            )}
 
-                        {/* Return Timing (Conditional) */}
-                        {tripType === 'Round Trip' && (
-                            <View style={styles.prefRow}>
-                                <TouchableOpacity style={[styles.prefItem, { flex: 1 }]} onPress={() => setActiveField('RETURN_TIME')}>
-                                    <Text style={styles.prefLabel}>Return Timing</Text>
-                                    <Text style={styles.prefValue}>{returnTiming} ⌄</Text>
-                                </TouchableOpacity>
-                            </View>
-                        )}
-                    </View>
+                            {/* PREFERENCES SECTION (Standard) */}
+                            {showPreferences && (
+                                <View style={styles.preferencesContainer}>
+                                    <View style={styles.prefHeaderPill}>
+                                        <Text style={styles.prefHeaderText}>You can edit your preference here</Text>
+                                    </View>
+
+                                    <View style={styles.prefCard}>
+                                        {/* Row 1 */}
+                                        <View style={styles.prefRow}>
+                                            <TouchableOpacity style={styles.prefItem} onPress={() => setActiveField('MODE')}>
+                                                <Text style={styles.prefLabel}>Mode of Travel*</Text>
+                                                <Text style={styles.prefValue}>{mode} ⌄</Text>
+                                            </TouchableOpacity>
+
+                                            <TouchableOpacity style={styles.prefItem} onPress={() => setActiveField('ACCOM')}>
+                                                <Text style={styles.prefLabel}>Accommodation</Text>
+                                                <Text style={styles.prefValue}>{accommodation} ⌄</Text>
+                                            </TouchableOpacity>
+
+                                            <View style={styles.prefItem}>
+                                                <Text style={styles.prefLabel}>Food</Text>
+                                                <View style={styles.foodToggleContainer}>
+                                                    <TouchableOpacity
+                                                        style={[styles.foodOption, food === 'Veg' && styles.foodActive]}
+                                                        onPress={() => setFood('Veg')}
+                                                    >
+                                                        <Text style={[styles.foodText, food === 'Veg' && styles.foodActiveText]}>Veg</Text>
+                                                    </TouchableOpacity>
+                                                    <TouchableOpacity
+                                                        style={[styles.foodOption, food === 'Non-Veg' && styles.foodActive]}
+                                                        onPress={() => setFood('Non-Veg')}
+                                                    >
+                                                        <Text style={[styles.foodText, food === 'Non-Veg' && styles.foodActiveText]}>Non-Veg</Text>
+                                                    </TouchableOpacity>
+                                                </View>
+                                            </View>
+                                        </View>
+
+                                        {/* Row 2 */}
+                                        <View style={styles.prefRow}>
+                                            <TouchableOpacity style={styles.prefItem} onPress={() => setActiveField('SEAT')}>
+                                                <Text style={styles.prefLabel}>Seat (i)</Text>
+                                                <Text style={styles.prefValue}>{seat} ⌄</Text>
+                                            </TouchableOpacity>
+
+                                            <TouchableOpacity style={styles.prefItem} onPress={() => setActiveField('ONWARD_TIME')}>
+                                                <Text style={styles.prefLabel}>Onward Timing</Text>
+                                                <Text style={styles.prefValue}>{onwardTiming} ⌄</Text>
+                                            </TouchableOpacity>
+                                        </View>
+
+                                        {/* Return Timing */}
+                                        {tripType === 'Round Trip' && (
+                                            <View style={styles.prefRow}>
+                                                <TouchableOpacity style={[styles.prefItem, { flex: 1 }]} onPress={() => setActiveField('RETURN_TIME')}>
+                                                    <Text style={styles.prefLabel}>Return Timing</Text>
+                                                    <Text style={styles.prefValue}>{returnTiming} ⌄</Text>
+                                                </TouchableOpacity>
+                                            </View>
+                                        )}
+                                    </View>
+                                </View>
+                            )}
+                        </>
+                    )}
                 </View>
-            )}
-
+            </View>
 
             {/* Modals */}
             {renderSelectionModal(activeField === 'FROM', DESTINATIONS, setFrom, 'Origin')}
             {renderSelectionModal(activeField === 'TO', DESTINATIONS, setTo, 'Destination')}
+
+            {/* Multi-City Specific Modals */}
+            {renderSelectionModal(
+                activeField === 'FROM_SEG',
+                DESTINATIONS,
+                (val) => activeSegmentId && updateSegment && updateSegment(activeSegmentId, 'from', val),
+                'Origin'
+            )}
+            {renderSelectionModal(
+                activeField === 'TO_SEG',
+                DESTINATIONS,
+                (val) => activeSegmentId && updateSegment && updateSegment(activeSegmentId, 'to', val),
+                'Destination'
+            )}
+
             {renderSelectionModal(activeField === 'PURPOSE', PURPOSES, setPurpose, 'Purpose')}
             {renderSelectionModal(activeField === 'COST', COST_CODES, setCostCode, 'Cost Code')}
 
-            {/* Preference Modals */}
+            {/* Preference Modals (Standard) */}
             {renderSelectionModal(activeField === 'MODE', MODES, setMode, 'Mode of Travel')}
             {renderSelectionModal(activeField === 'ACCOM', ACCOMMODATION, setAccommodation, 'Accommodation')}
             {renderSelectionModal(activeField === 'SEAT', SEATS, setSeat, 'Seat Preference')}
             {renderSelectionModal(activeField === 'ONWARD_TIME', TIMINGS, setOnwardTiming, 'Onward Timing')}
             {renderSelectionModal(activeField === 'RETURN_TIME', TIMINGS, setReturnTiming, 'Return Timing')}
+
+            {/* Preference Modals (Multi-City Segment) */}
+            {renderSelectionModal(
+                activeField === 'MODE_SEG',
+                MODES,
+                (val) => activeSegmentId && updateSegment && updateSegment(activeSegmentId, 'mode', val),
+                'Mode of Travel'
+            )}
+            {renderSelectionModal(
+                activeField === 'ACCOM_SEG',
+                ACCOMMODATION,
+                (val) => activeSegmentId && updateSegment && updateSegment(activeSegmentId, 'accommodation', val),
+                'Accommodation'
+            )}
+            {renderSelectionModal(
+                activeField === 'SEAT_SEG',
+                SEATS,
+                (val) => activeSegmentId && updateSegment && updateSegment(activeSegmentId, 'seat', val),
+                'Seat Preference'
+            )}
+            {renderSelectionModal(
+                activeField === 'TIMING_SEG',
+                TIMINGS,
+                (val) => activeSegmentId && updateSegment && updateSegment(activeSegmentId, 'onwardTiming', val),
+                'Timing'
+            )}
+
         </View>
     );
 };
@@ -474,6 +683,48 @@ const styles = StyleSheet.create({
     modalTitle: { fontSize: 18, fontWeight: 'bold', marginBottom: 15, textAlign: 'center' },
     modalItem: { paddingVertical: 15, borderBottomWidth: 1, borderBottomColor: '#eee' },
     modalItemText: { fontSize: 16, color: '#333', textAlign: 'center' },
+
+    // Add Trip Button
+    addTripBtn: {
+        backgroundColor: '#71B006',
+        padding: 12,
+        borderRadius: 8,
+        alignItems: 'center',
+        alignSelf: 'flex-end',
+        marginTop: 10,
+    },
+    addTripText: {
+        color: '#fff',
+        fontWeight: 'bold',
+        fontSize: 14,
+    },
+
+    // Multi-City Styles
+    multiCityContainer: {
+        marginTop: 10,
+    },
+    segmentBlock: {
+        backgroundColor: '#f9f9f9',
+        borderRadius: 12,
+        marginBottom: 20,
+        paddingBottom: 10,
+        borderWidth: 1,
+        borderColor: '#eee',
+        overflow: 'hidden'
+    },
+    segmentHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingHorizontal: 16,
+        paddingVertical: 10,
+        backgroundColor: '#eee',
+    },
+    segmentTitle: {
+        fontSize: 14,
+        fontWeight: 'bold',
+        color: '#555',
+    },
 });
 
 export default CreateTicketForm;

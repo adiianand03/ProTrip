@@ -56,7 +56,9 @@ const TravelSettlementReport = () => {
                         <Text style={{ fontSize: 24, color: '#333' }}>←</Text>
                     </TouchableOpacity>
                     <Text style={styles.headerTitle}>Travel Settlement</Text>
-                    <View style={{ width: 24 }} />
+                    <TouchableOpacity onPress={() => navigation.navigate('TravelSettlement')}>
+                        <Text style={{ color: '#7cc000', fontWeight: 'bold' }}>My Settlements</Text>
+                    </TouchableOpacity>
                 </View>
                 {/* CARD */}
                 <View style={styles.card}>

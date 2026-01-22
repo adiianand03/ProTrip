@@ -49,17 +49,60 @@ const CreateTicketScreen: React.FC = () => {
 
     // State Lifting
     const [tripType, setTripType] = useState<'One Way' | 'Round Trip' | 'Multi-city'>('One Way');
+
+    // One Way / Round Trip State
     const [from, setFrom] = useState('');
     const [to, setTo] = useState('');
     const [purpose, setPurpose] = useState('');
     const [costCode, setCostCode] = useState('');
-
-    // Dates are generated here
-    const dates = getDates();
     const [startDate, setStartDate] = useState('');
     const [returnDate, setReturnDate] = useState('');
 
-    // Preference State
+    // Multi-City State
+    const [segments, setSegments] = useState([
+        {
+            id: '1', from: '', to: '', date: '',
+            mode: 'Flight', accommodation: 'Not Required', food: 'Veg', seat: 'No Preference', onwardTiming: 'Any Timing'
+        }
+    ]);
+
+    const addSegment = () => {
+        const lastSegment = segments[segments.length - 1];
+        const newFrom = lastSegment.to || '';
+        setSegments([
+            ...segments,
+            {
+                id: Date.now().toString(), from: newFrom, to: '', date: '',
+                mode: 'Flight', accommodation: 'Not Required', food: 'Veg', seat: 'No Preference', onwardTiming: 'Any Timing'
+            }
+        ]);
+    };
+
+    const removeSegment = (id: string) => {
+        if (segments.length > 1) {
+            setSegments(segments.filter(s => s.id !== id));
+        } else {
+            Alert.alert("Minimum Limit", "Multi-city trip must have at least 1 segment.");
+        }
+    };
+
+    const updateSegment = (id: string, field: string, value: string) => {
+        setSegments(segments.map(s => {
+            if (s.id === id) {
+                // If updating 'to' of a segment, auto-update 'from' of next segment
+                if (field === 'to') {
+                    // Logic to update next segment's from could be here, but simpler to just let user add new segment which auto-fills
+                }
+                return { ...s, [field]: value };
+            }
+            return s;
+        }));
+    };
+
+    // Dates are generated here
+    const dates = getDates();
+
+    // Preference State (Single Trip / Round Trip)
     const [mode, setMode] = useState('Flight');
     const [accommodation, setAccommodation] = useState('Not Required');
     const [food, setFood] = useState<'Veg' | 'Non-Veg'>('Veg');
@@ -69,16 +112,25 @@ const CreateTicketScreen: React.FC = () => {
 
     // Domestic Cities Helper
     const INDIAN_CITIES = ['Mumbai', 'New Delhi', 'Bengaluru', 'Chennai', 'Hyderabad', 'Pune', 'Kolkata'];
-    const isInternational = Boolean(to && !INDIAN_CITIES.includes(to));
+    const isInternational = Boolean(
+        (tripType !== 'Multi-city' && to && !INDIAN_CITIES.includes(to)) ||
+        (tripType === 'Multi-city' && segments.some(s => s.to && !INDIAN_CITIES.includes(s.to)))
+    );
 
-    const areDetailsFilled = Boolean(from && to && purpose && costCode);
+    const isTripDefined = Boolean(
+        tripType === 'Multi-city'
+            ? segments.every(s => s.from && s.to && s.date)
+            : from && to && startDate
+    );
+
+    const areDetailsFilled = Boolean(purpose && costCode && isTripDefined);
     // Disclaimer state
     const [disclaimerAgreed, setDisclaimerAgreed] = useState(false);
     const [showDisclaimer, setShowDisclaimer] = useState(false);
 
     const handleSubmit = () => {
-        if (!areDetailsFilled || !startDate) {
-            Alert.alert("Missing Details", "Please fill all details and select a date.");
+        if (!areDetailsFilled) {
+            Alert.alert("Missing Details", "Please fill all trip details, purpose, and cost code.");
             return;
         }
         if (tripType === 'Round Trip' && !returnDate) {
@@ -90,14 +142,27 @@ const CreateTicketScreen: React.FC = () => {
             return;
         }
 
+        let ticketFrom = from;
+        let ticketTo = to;
+        let ticketDate = startDate;
+
+        if (tripType === 'Multi-city') {
+            ticketFrom = segments[0].from;
+            ticketTo = segments[segments.length - 1].to; // Or maybe "Multi-City Trip"
+            ticketDate = `${segments[0].date} - ${segments[segments.length - 1].date}`;
+        } else if (tripType === 'Round Trip') {
+            ticketDate = `${startDate} - ${returnDate}`;
+        }
+
         const newTicket = {
             id: `TRI/27/${Math.floor(Math.random() * 10000)}`,
-            from,
-            to,
-            date: tripType === 'Round Trip' ? `${startDate} - ${returnDate}` : startDate,
+            from: ticketFrom,
+            to: ticketTo,
+            date: ticketDate,
             purpose,
             costCode,
-            tripType
+            tripType,
+            segments: tripType === 'Multi-city' ? segments : undefined
         };
 
         addTicket(newTicket);
@@ -114,14 +179,55 @@ const CreateTicketScreen: React.FC = () => {
     const [forex, setForex] = useState(false);
     const [remarks, setRemarks] = useState('');
 
+    const [currentStep, setCurrentStep] = useState(1);
+
     const handleDiscard = () => {
         navigation.goBack();
+    };
+
+    const handleNext = () => {
+        if (currentStep === 1) {
+            if (!purpose || !costCode) {
+                Alert.alert("Missing Details", "Please select Purpose and Cost Code.");
+                return;
+            }
+
+            if (!isTripDefined) {
+                Alert.alert("Missing Trip Details", "Please complete the route and date selection.");
+                return;
+            }
+
+            // If international, go to step 2 (Global Mobility), else skip to step 3 (Account Info)
+            setCurrentStep(isInternational ? 2 : 3);
+        } else if (currentStep === 2) {
+            // From Global Mobility to Account Info
+            setCurrentStep(3);
+        } else if (currentStep === 3) {
+            // From Account Info to Traveller Details
+            setCurrentStep(4);
+        }
+    };
+
+    const handleBack = () => {
+        if (currentStep === 2) {
+            setCurrentStep(1);
+        } else if (currentStep === 3) {
+            // If international, go back to step 2, else to step 1
+            setCurrentStep(isInternational ? 2 : 1);
+        } else if (currentStep === 4) {
+            setCurrentStep(3);
+        } else {
+            navigation.goBack();
+        }
     };
 
     return (
         <MainLayout>
             <View style={styles.container}>
                 <View style={styles.headerRow}>
+                    <TouchableOpacity onPress={handleBack} style={{ padding: 5 }}>
+                        <Text style={{ fontSize: 24, color: '#333' }}>←</Text>
+                    </TouchableOpacity>
                     <TouchableOpacity onPress={() => navigation.navigate('TravelRequest')}>
                         <Text style={styles.myTicketsLink}>My Tickets ↗</Text>
                     </TouchableOpacity>
@@ -140,43 +246,92 @@ const CreateTicketScreen: React.FC = () => {
                         nestedScrollEnabled={true}
                     >
 
-                        {/* Form Card */}
-                        <CreateTicketForm
-                            tripType={tripType}
-                            setTripType={setTripType}
-                            from={from}
-                            setFrom={setFrom}
-                            to={to}
-                            setTo={setTo}
-                            purpose={purpose}
-                            setPurpose={setPurpose}
-                            costCode={costCode}
-                            setCostCode={setCostCode}
-                            startDate={startDate}
-                            setStartDate={setStartDate}
-                            returnDate={returnDate}
-                            setReturnDate={setReturnDate}
-                            dates={dates}
-                            // Preferences
-                            mode={mode}
-                            setMode={setMode}
-                            accommodation={accommodation}
-                            setAccommodation={setAccommodation}
-                            food={food}
-                            setFood={setFood}
-                            seat={seat}
-                            setSeat={setSeat}
-                            onwardTiming={onwardTiming}
-                            setOnwardTiming={setOnwardTiming}
-                            returnTiming={returnTiming}
-                            setReturnTiming={setReturnTiming}
-                        />
-
-                        {/* Additional Cards (Shown when details are filled) */}
-                        {areDetailsFilled && !!startDate && (
+                        {/* STEP 1: TRIP DETAILS */}
+                        {currentStep === 1 && (
                             <>
-                                {isInternational && <GlobalMobilityCard />}
+                                <CreateTicketForm
+                                    tripType={tripType}
+                                    setTripType={setTripType}
+                                    from={from}
+                                    setFrom={setFrom}
+                                    to={to}
+                                    setTo={setTo}
+                                    purpose={purpose}
+                                    setPurpose={setPurpose}
+                                    costCode={costCode}
+                                    setCostCode={setCostCode}
+                                    startDate={startDate}
+                                    setStartDate={setStartDate}
+                                    returnDate={returnDate}
+                                    setReturnDate={setReturnDate}
+                                    dates={dates}
+                                    // Multi-City Props
+                                    segments={segments}
+                                    addSegment={addSegment}
+                                    removeSegment={removeSegment}
+                                    updateSegment={updateSegment}
+                                    // Preferences
+                                    mode={mode}
+                                    setMode={setMode}
+                                    accommodation={accommodation}
+                                    setAccommodation={setAccommodation}
+                                    food={food}
+                                    setFood={setFood}
+                                    seat={seat}
+                                    setSeat={setSeat}
+                                    onwardTiming={onwardTiming}
+                                    setOnwardTiming={setOnwardTiming}
+                                    returnTiming={returnTiming}
+                                    setReturnTiming={setReturnTiming}
+                                />
+
+                                <View style={styles.actionSection}>
+                                    <TouchableOpacity
+                                        style={[styles.nextBtn, (!areDetailsFilled) && styles.disabledNextBtn]}
+                                        onPress={handleNext}
+                                        disabled={!areDetailsFilled}
+                                    >
+                                        <Text style={styles.nextBtnText}>Next →</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </>
+                        )}
+
+                        {/* STEP 2: GLOBAL MOBILITY */}
+                        {currentStep === 2 && isInternational && (
+                            <>
+                                <GlobalMobilityCard />
+
+                                <View style={styles.actionSection}>
+                                    <TouchableOpacity
+                                        style={styles.nextBtn}
+                                        onPress={handleNext}
+                                    >
+                                        <Text style={styles.nextBtnText}>Next →</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </>
+                        )}
+
+                        {/* STEP 3: ACCOUNT INFORMATION */}
+                        {currentStep === 3 && (
+                            <>
                                 <AccountInfoCard />
+
+                                <View style={styles.actionSection}>
+                                    <TouchableOpacity
+                                        style={styles.nextBtn}
+                                        onPress={handleNext}
+                                    >
+                                        <Text style={styles.nextBtnText}>Next →</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </>
+                        )}
+
+                        {/* STEP 4: TRAVELLER DETAILS + ADDITIONAL FIELDS */}
+                        {currentStep === 4 && (
+                            <>
                                 <TravellerDetailsCard isInternational={isInternational} />
 
                                 {/* SEPARATOR */}
@@ -244,7 +399,7 @@ const CreateTicketScreen: React.FC = () => {
                                 </View>
 
 
-                                {/* Disclaimer Checkbox Row - UPDATED LOGIC */}
+                                {/* Disclaimer Checkbox Row */}
                                 <View style={styles.disclaimerRow}>
                                     <TouchableOpacity
                                         style={[styles.checkbox, disclaimerAgreed && styles.checkboxChecked]}
@@ -270,9 +425,9 @@ const CreateTicketScreen: React.FC = () => {
                                     </TouchableOpacity>
 
                                     <TouchableOpacity
-                                        style={[styles.submitActionBtn, (!areDetailsFilled || !startDate || !disclaimerAgreed || !isos) && styles.disabledActionBtn]}
+                                        style={[styles.submitActionBtn, (!disclaimerAgreed || !isos) && styles.disabledActionBtn]}
                                         onPress={handleSubmit}
-                                        disabled={!areDetailsFilled || !startDate || !disclaimerAgreed || !isos}
+                                        disabled={!disclaimerAgreed || !isos}
                                     >
                                         <Text style={styles.submitActionText}>Submit</Text>
                                     </TouchableOpacity>
@@ -343,7 +498,8 @@ const styles = StyleSheet.create({
     },
     headerRow: {
         flexDirection: 'row',
-        justifyContent: 'flex-end',
+        justifyContent: 'space-between',
+        alignItems: 'center',
         padding: 16,
         backgroundColor: '#f8f8f0'
     },
@@ -579,6 +735,29 @@ const styles = StyleSheet.create({
     submitActionText: {
         color: '#fff',
         fontWeight: '600',
+    },
+
+    // Multi-Step Navigation
+    nextBtn: {
+        backgroundColor: '#F5A623', // Yellowish/Orange
+        paddingVertical: 16,
+        borderRadius: 8,
+        alignItems: 'center',
+        shadowColor: '#F5A623',
+        shadowOpacity: 0.4,
+        shadowRadius: 10,
+        elevation: 6,
+        marginBottom: 20,
+    },
+    disabledNextBtn: {
+        backgroundColor: '#ccc',
+        shadowOpacity: 0,
+        elevation: 0,
+    },
+    nextBtnText: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#fff',
     },
 });
 

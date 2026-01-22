@@ -119,7 +119,10 @@ const AddExpenseScreen = () => {
 
         addSettlement(newSettlement);
         Alert.alert("Success", "Expense Report Created Successfully");
-        navigation.pop(2); // Return to TravelSettlementScreen, closing Report and AddExpense screens
+        // Navigate to TravelSettlement (List) so user sees the new item
+        // Pop to top (Home) first to clear stack, then push TravelSettlement
+        navigation.popToTop();
+        navigation.navigate('TravelSettlement');
     };
 
     return (

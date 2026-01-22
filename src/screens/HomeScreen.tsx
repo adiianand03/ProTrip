@@ -88,7 +88,7 @@ const HomeScreen: React.FC<HomeScreenProps> = () => {
                     <DashboardCard
                         title="Travel Settlement"
                         Icon={ExpenseReportIcon}
-                        onPress={() => navigation.navigate('TravelSettlement')}
+                        onPress={() => navigation.navigate('TravelSettlementReport')}
                     />
                 </View>
 
