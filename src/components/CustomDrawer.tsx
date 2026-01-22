@@ -125,8 +125,8 @@ const styles = StyleSheet.create({
     },
     drawerContainer: {
         width: '75%',
-        backgroundColor: '#fff',
-        shadowColor: "#000",
+        backgroundColor: '#F5F5F5',
+        shadowColor: "#424242",
         shadowOffset: { width: 2, height: 0 },
         shadowOpacity: 0.25,
         shadowRadius: 3.84,
@@ -138,19 +138,19 @@ const styles = StyleSheet.create({
         paddingBottom: 20,
     },
     profileHeader: {
-        backgroundColor: '#f8f9fa',
+        backgroundColor: '#F5F5F5',
         paddingVertical: 30,
         paddingHorizontal: 20,
         alignItems: 'center',
         borderBottomWidth: 1,
-        borderBottomColor: '#eee',
+        borderBottomColor: '#EEEEEE',
         marginBottom: 10,
     },
     avatarContainer: {
         width: 80,
         height: 80,
         borderRadius: 40,
-        backgroundColor: '#e1e1e1',
+        backgroundColor: '#E0E0E0',
         justifyContent: 'center',
         alignItems: 'center',
         marginBottom: 12,
@@ -159,12 +159,12 @@ const styles = StyleSheet.create({
     userName: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: '#333',
+        color: '#616161',
         marginBottom: 4,
     },
     userEmail: {
         fontSize: 14,
-        color: '#666',
+        color: '#9E9E9E',
     },
     menuContainer: {
         paddingTop: 10,
@@ -173,7 +173,7 @@ const styles = StyleSheet.create({
         paddingVertical: 15,
         paddingHorizontal: 20,
         borderBottomWidth: 1,
-        borderBottomColor: '#f0f0f0',
+        borderBottomColor: '#F5F5F5',
         flexDirection: 'row',
         alignItems: 'center',
     },
@@ -182,22 +182,22 @@ const styles = StyleSheet.create({
     },
     menuText: {
         fontSize: 16,
-        color: '#333',
+        color: '#616161',
         fontWeight: '500',
     },
     footer: {
         borderTopWidth: 1,
-        borderTopColor: '#eee',
+        borderTopColor: '#EEEEEE',
         padding: 20,
     },
     logoutBtn: {
-        backgroundColor: '#71B006', // Updated to standard green
+        backgroundColor: '#74c657', // Updated to standard green
         paddingVertical: 12,
         alignItems: 'center',
         borderRadius: 8,
     },
     logoutText: {
-        color: '#fff',
+        color: '#F5F5F5',
         fontWeight: 'bold',
         fontSize: 16,
     }

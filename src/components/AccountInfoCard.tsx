@@ -70,11 +70,11 @@ const AccountInfoCard = () => {
 
 const styles = StyleSheet.create({
     card: {
-        backgroundColor: '#FFFFFF',
+        backgroundColor: '#F5F5F5',
         borderRadius: 12,
         marginHorizontal: 16,
         marginBottom: 20,
-        shadowColor: '#000',
+        shadowColor: '#424242',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
         shadowRadius: 4,
@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
     headerTitle: {
         fontSize: 16,
         fontWeight: 'bold',
-        color: '#333',
+        color: '#616161',
     },
     content: {
         padding: 15,
@@ -107,20 +107,20 @@ const styles = StyleSheet.create({
     },
     label: {
         fontSize: 12,
-        color: '#666',
+        color: '#9E9E9E',
         marginBottom: 4,
         fontWeight: '600',
         textTransform: 'uppercase',
     },
     value: {
         fontSize: 14,
-        color: '#333',
+        color: '#616161',
         fontWeight: '500',
-        backgroundColor: '#F9F9F9',
+        backgroundColor: '#F5F5F5',
         padding: 8,
         borderRadius: 5,
         borderWidth: 1,
-        borderColor: '#eee'
+        borderColor: '#EEEEEE'
     },
     toggleContainer: {
         flexDirection: 'row',
@@ -134,14 +134,14 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
     },
     toggleButtonActive: {
-        backgroundColor: '#71B006',
+        backgroundColor: '#74c657',
     },
     toggleText: {
         fontSize: 12,
-        color: '#333',
+        color: '#616161',
     },
     toggleTextActive: {
-        color: '#fff',
+        color: '#F5F5F5',
         fontWeight: 'bold'
     }
 });

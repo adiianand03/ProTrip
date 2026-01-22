@@ -152,7 +152,7 @@ const TravellerDetailsCard = ({ isInternational }: TravellerDetailsCardProps) =>
                                     value={traveller.identityNumber}
                                     onChangeText={(text) => updateTraveller(index, 'identityNumber', text)}
                                     placeholder="Enter Identity Number"
-                                    placeholderTextColor="#999"
+                                    placeholderTextColor="#BDBDBD"
                                 />
                             </View>
 
@@ -188,7 +188,7 @@ const TravellerDetailsCard = ({ isInternational }: TravellerDetailsCardProps) =>
                                     value={traveller.issuedBy}
                                     onChangeText={(text) => updateTraveller(index, 'issuedBy', text)}
                                     placeholder="Eg. Government of India"
-                                    placeholderTextColor="#999"
+                                    placeholderTextColor="#BDBDBD"
                                 />
                             </View>
 
@@ -233,10 +233,10 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     card: {
-        backgroundColor: '#FFFFFF',
+        backgroundColor: '#F5F5F5',
         borderRadius: 12,
         marginHorizontal: 16,
-        shadowColor: '#000',
+        shadowColor: '#424242',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
         shadowRadius: 4,
@@ -255,7 +255,7 @@ const styles = StyleSheet.create({
     headerTitle: {
         fontSize: 16,
         fontWeight: 'bold',
-        color: '#333',
+        color: '#616161',
     },
     content: {
         padding: 15,
@@ -265,7 +265,7 @@ const styles = StyleSheet.create({
     },
     borderTop: {
         borderTopWidth: 1,
-        borderTopColor: '#eee',
+        borderTopColor: '#EEEEEE',
         paddingTop: 15,
         marginTop: 5,
     },
@@ -286,7 +286,7 @@ const styles = StyleSheet.create({
     },
     label: {
         fontSize: 12,
-        color: '#666',
+        color: '#9E9E9E',
         marginBottom: 6,
         fontWeight: '600',
     },
@@ -294,12 +294,12 @@ const styles = StyleSheet.create({
         color: 'red',
     },
     input: {
-        backgroundColor: '#fff',
+        backgroundColor: '#F5F5F5',
         borderBottomWidth: 1,
-        borderBottomColor: '#ccc',
+        borderBottomColor: '#E0E0E0',
         paddingVertical: 8,
         fontSize: 14,
-        color: '#333',
+        color: '#616161',
     },
     dropdownContainer: {
         zIndex: 10,
@@ -310,24 +310,24 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingVertical: 8,
         borderBottomWidth: 1,
-        borderBottomColor: '#ccc',
+        borderBottomColor: '#E0E0E0',
     },
     dropdownText: {
         fontSize: 14,
-        color: '#333',
+        color: '#616161',
     },
     dropdownList: {
         position: 'absolute',
         top: '100%',
         left: 0,
         right: 0,
-        backgroundColor: '#fff',
+        backgroundColor: '#F5F5F5',
         borderWidth: 1,
-        borderColor: '#ccc',
+        borderColor: '#E0E0E0',
         borderRadius: 4,
         marginTop: 4,
         elevation: 5,
-        shadowColor: '#000',
+        shadowColor: '#424242',
         shadowOpacity: 0.2,
         shadowRadius: 4,
         shadowOffset: { width: 0, height: 2 },
@@ -336,16 +336,16 @@ const styles = StyleSheet.create({
     dropdownItem: {
         padding: 10,
         borderBottomWidth: 1,
-        borderBottomColor: '#eee',
+        borderBottomColor: '#EEEEEE',
     },
     dropdownItemText: {
         fontSize: 14,
-        color: '#333',
+        color: '#616161',
     },
     uploadBox: {
-        backgroundColor: '#f5f5f5',
+        backgroundColor: '#F5F5F5',
         borderWidth: 1,
-        borderColor: '#ddd',
+        borderColor: '#EEEEEE',
         borderStyle: 'dashed',
         borderRadius: 4,
         padding: 15,

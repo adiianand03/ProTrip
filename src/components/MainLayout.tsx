@@ -24,7 +24,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, showProfileInDrawer =
             <View style={styles.navbar}>
                 {/* Left: Hamburger */}
                 <TouchableOpacity onPress={() => setIsDrawerOpen(true)} style={styles.iconButton}>
-                    <MenuIcon width={24} height={24} color="#fff" />
+                    <MenuIcon width={24} height={24} color="#F5F5F5" />
                 </TouchableOpacity>
 
                 {/* Center: Branding */}
@@ -38,7 +38,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, showProfileInDrawer =
 
                 {/* Right: Notification */}
                 <TouchableOpacity style={styles.iconButton}>
-                    <NotificationIcon width={24} height={24} color="#fff" />
+                    <NotificationIcon width={24} height={24} color="#F5F5F5" />
                 </TouchableOpacity>
             </View>
 
@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         paddingHorizontal: 16,
         elevation: 4,
-        shadowColor: '#000',
+        shadowColor: '#424242',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
         shadowRadius: 2,
@@ -89,14 +89,14 @@ const styles = StyleSheet.create({
         marginRight: 8,
     },
     headerTitleText: {
-        color: '#fff',
+        color: '#F5F5F5',
         fontSize: 14,
         fontWeight: 'bold',
         textDecorationLine: 'underline',
         marginBottom: 2,
     },
     headerSubtitleText: {
-        color: '#fff',
+        color: '#F5F5F5',
         fontSize: 12,
         fontWeight: '500',
     },

@@ -111,12 +111,12 @@ const styles = StyleSheet.create({
     },
     welcomeText: {
         fontSize: 14,
-        color: '#666',
+        color: '#9E9E9E',
     },
     userName: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: '#333',
+        color: '#616161',
     },
     gridContainer: {
         marginBottom: 20,
@@ -131,21 +131,21 @@ const styles = StyleSheet.create({
     sectionTitle: {
         fontSize: 16,
         fontWeight: 'bold',
-        color: '#333',
+        color: '#616161',
     },
     viewAllText: {
         fontSize: 14,
-        color: '#71B006',
+        color: '#74c657',
     },
     activityCard: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#fff',
+        backgroundColor: '#F5F5F5',
         marginHorizontal: 20,
         marginBottom: 10,
         padding: 15,
         borderRadius: 12,
-        shadowColor: '#000',
+        shadowColor: '#424242',
         shadowOpacity: 0.1,
         shadowRadius: 4,
         shadowOffset: { width: 0, height: 2 },
@@ -155,7 +155,7 @@ const styles = StyleSheet.create({
         width: 40,
         height: 40,
         borderRadius: 20,
-        backgroundColor: '#f0f9eb',
+        backgroundColor: '#b3e0a3',
         alignItems: 'center',
         justifyContent: 'center',
         marginRight: 15,
@@ -166,11 +166,11 @@ const styles = StyleSheet.create({
     activityTitle: {
         fontSize: 14,
         fontWeight: 'bold',
-        color: '#333',
+        color: '#616161',
     },
     activityDate: {
         fontSize: 12,
-        color: '#999',
+        color: '#BDBDBD',
     },
     activityStatus: {
         fontSize: 12,

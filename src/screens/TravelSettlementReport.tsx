@@ -53,11 +53,11 @@ const TravelSettlementReport = () => {
                 {/* Header */}
                 <View style={styles.header}>
                     <TouchableOpacity onPress={() => navigation.goBack()} style={{ padding: 5 }}>
-                        <Text style={{ fontSize: 24, color: '#333' }}>←</Text>
+                        <Text style={{ fontSize: 24, color: '#616161' }}>←</Text>
                     </TouchableOpacity>
                     <Text style={styles.headerTitle}>Travel Settlement</Text>
                     <TouchableOpacity onPress={() => navigation.navigate('TravelSettlement')}>
-                        <Text style={{ color: '#7cc000', fontWeight: 'bold' }}>My Settlements</Text>
+                        <Text style={{ color: '#74c657', fontWeight: 'bold' }}>My Settlements</Text>
                     </TouchableOpacity>
                 </View>
                 {/* CARD */}
@@ -89,7 +89,7 @@ const TravelSettlementReport = () => {
                             activeOpacity={0.8}
                             onPress={() => setOpen(!open)}
                         >
-                            <Text style={[styles.dropdownText, !selectedTicketId && { color: '#999' }]}>
+                            <Text style={[styles.dropdownText, !selectedTicketId && { color: '#BDBDBD' }]}>
                                 {selectedTicketId || 'Select Travel Request Number'}
                             </Text>
                             <Text style={styles.arrow}>{open ? '▲' : '▼'}</Text>
@@ -146,7 +146,7 @@ const styles = StyleSheet.create({
     /* NAV BAR */
     navbar: {
         height: 56,
-        backgroundColor: '#6b6b6b',
+        backgroundColor: '#757575',
     },
 
     bg: {
@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
 
     /* CARD */
     card: {
-        backgroundColor: '#fff',
+        backgroundColor: '#F5F5F5',
         borderRadius: 14,
         padding: 20,
         elevation: 6,
@@ -184,7 +184,7 @@ const styles = StyleSheet.create({
 
     input: {
         borderBottomWidth: 1,
-        borderColor: '#ccc',
+        borderColor: '#E0E0E0',
         marginBottom: 20,
         paddingVertical: 6,
     },
@@ -197,24 +197,24 @@ const styles = StyleSheet.create({
 
     dropdown: {
         borderWidth: 1,
-        borderColor: '#7cc000',
+        borderColor: '#74c657',
         borderRadius: 6,
         paddingHorizontal: 12,
         paddingVertical: 14,
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        backgroundColor: '#fff',
+        backgroundColor: '#F5F5F5',
     },
 
     dropdownText: {
-        color: '#555',
+        color: '#757575',
         fontSize: 14,
     },
 
     arrow: {
         fontSize: 12,
-        color: '#555',
+        color: '#757575',
     },
 
     dropdownPopup: {
@@ -222,12 +222,12 @@ const styles = StyleSheet.create({
         top: 52,
         left: 0,
         right: 0,
-        backgroundColor: '#fff',
+        backgroundColor: '#F5F5F5',
         borderRadius: 8,
         paddingVertical: 14,
         paddingHorizontal: 16,
 
-        shadowColor: '#000',
+        shadowColor: '#424242',
         shadowOpacity: 0.2,
         shadowRadius: 10,
         shadowOffset: { width: 0, height: 4 },
@@ -239,17 +239,17 @@ const styles = StyleSheet.create({
     dropdownItem: {
         paddingVertical: 12,
         borderBottomWidth: 1,
-        borderBottomColor: '#f0f0f0',
+        borderBottomColor: '#F5F5F5',
     },
 
     dropdownItemText: {
         fontSize: 14,
-        color: '#333',
+        color: '#616161',
     },
 
     noOption: {
         fontSize: 14,
-        color: '#555',
+        color: '#757575',
     },
 
     /* BUTTONS */
@@ -261,31 +261,31 @@ const styles = StyleSheet.create({
 
     cancelBtn: {
         borderWidth: 1,
-        borderColor: '#7cc000',
+        borderColor: '#74c657',
         paddingVertical: 12,
         paddingHorizontal: 40,
         borderRadius: 6,
     },
 
     cancelText: {
-        color: '#7cc000',
+        color: '#74c657',
         fontWeight: '500',
     },
 
     submitBtn: {
-        backgroundColor: '#7cc000',
+        backgroundColor: '#74c657',
         paddingVertical: 12,
         paddingHorizontal: 40,
         borderRadius: 6,
     },
 
     submitText: {
-        color: '#fff',
+        color: '#F5F5F5',
         fontWeight: '600',
     },
     container: {
         flex: 1,
-        backgroundColor: '#f5f5f5',
+        backgroundColor: '#F5F5F5',
     },
     header: {
         flexDirection: 'row',
@@ -293,13 +293,13 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingHorizontal: 20,
         paddingVertical: 15,
-        backgroundColor: '#fff',
+        backgroundColor: '#F5F5F5',
         borderBottomWidth: 1,
-        borderBottomColor: '#eee',
+        borderBottomColor: '#EEEEEE',
     },
     headerTitle: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: '#333',
+        color: '#616161',
     },
 });

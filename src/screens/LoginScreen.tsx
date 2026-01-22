@@ -64,7 +64,7 @@ const LoginScreen = () => {
                     <TextInput
                         style={styles.input}
                         placeholder="Enter your email"
-                        placeholderTextColor="#888"
+                        placeholderTextColor="#BDBDBD"
                         value={email}
                         onChangeText={setEmail}
                         keyboardType="email-address"
@@ -76,7 +76,7 @@ const LoginScreen = () => {
                         <TextInput
                             style={styles.passwordInput}
                             placeholder="Enter your password"
-                            placeholderTextColor="#888"
+                            placeholderTextColor="#BDBDBD"
                             value={password}
                             onChangeText={setPassword}
                             secureTextEntry={!isPasswordVisible}
@@ -105,7 +105,7 @@ const LoginScreen = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#fff', // Cloudy/Light Blue-Grey
+        backgroundColor: '#F5F5F5', // Cloudy/Light Blue-Grey
     },
     content: {
         flex: 1,
@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
     headerText: {
         fontSize: 28,
         fontWeight: 'bold',
-        color: '#71B006',
+        color: '#74c657',
     },
     logoContainer: {
         alignItems: 'center',
@@ -135,28 +135,28 @@ const styles = StyleSheet.create({
     label: {
         fontSize: 16,
         marginBottom: 8,
-        color: '#71B006',
+        color: '#74c657',
         fontWeight: '500',
     },
     input: {
         height: 50,
-        borderColor: '#ddd',
+        borderColor: '#E0E0E0',
         borderWidth: 1,
         borderRadius: 8,
         paddingHorizontal: 16,
         marginBottom: 20,
         fontSize: 16,
-        color: '#000',
-        backgroundColor: '#fff',
+        color: '#424242',
+        backgroundColor: '#F5F5F5',
     },
     passwordContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        borderColor: '#ddd',
+        borderColor: '#E0E0E0',
         borderWidth: 1,
         borderRadius: 8,
         marginBottom: 20,
-        backgroundColor: '#fff',
+        backgroundColor: '#F5F5F5',
         height: 50,
     },
     passwordInput: {
@@ -164,13 +164,13 @@ const styles = StyleSheet.create({
         height: 50,
         paddingHorizontal: 16,
         fontSize: 16,
-        color: '#000',
+        color: '#424242',
     },
     eyeButton: {
         padding: 10,
     },
     button: {
-        backgroundColor: '#71B006',
+        backgroundColor: '#74c657',
         height: 50,
         borderRadius: 5,
         justifyContent: 'center',
@@ -178,7 +178,7 @@ const styles = StyleSheet.create({
         marginTop: 10,
     },
     buttonText: {
-        color: '#fff',
+        color: '#F5F5F5',
         fontSize: 18,
         fontWeight: 'bold',
     },

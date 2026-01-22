@@ -160,12 +160,12 @@ const CreateTicketForm: React.FC<CreateTicketFormProps> = ({
                 <View style={styles.upperInputSection}>
                     <TouchableOpacity style={styles.inputBtn} onPress={() => setActiveField('PURPOSE')}>
                         <Text style={styles.inputLabel}>Purpose Of Travel</Text>
-                        <Text style={[styles.inputText, !purpose && { color: '#ccc' }]}>{purpose || "Select Purpose"}</Text>
+                        <Text style={[styles.inputText, !purpose && { color: '#E0E0E0' }]}>{purpose || "Select Purpose"}</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity style={styles.inputBtn} onPress={() => setActiveField('COST')}>
                         <Text style={styles.inputLabel}>Cost Code</Text>
-                        <Text style={[styles.inputText, !costCode && { color: '#ccc' }]}>{costCode || "Select Cost Code"}</Text>
+                        <Text style={[styles.inputText, !costCode && { color: '#E0E0E0' }]}>{costCode || "Select Cost Code"}</Text>
                     </TouchableOpacity>
                 </View>
 
@@ -556,12 +556,12 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     topCard: {
-        backgroundColor: '#fff',
+        backgroundColor: '#F5F5F5',
         marginHorizontal: 16,
         marginBottom: 20,
         borderRadius: 20,
         elevation: 4,
-        shadowColor: '#000',
+        shadowColor: '#424242',
         shadowOpacity: 0.1,
         shadowRadius: 10,
         padding: 20,
@@ -570,20 +570,20 @@ const styles = StyleSheet.create({
     // ... Existing Styles ... (Copied from previous functionality)
     upperInputSection: { marginBottom: 20, gap: 12 },
     inputBtn: { borderBottomWidth: 1, borderBottomColor: '#eee', paddingVertical: 10 },
-    inputLabel: { fontSize: 12, color: '#888', marginBottom: 4, fontWeight: '600' },
-    inputText: { fontSize: 16, color: '#333', fontWeight: '500' },
+    inputLabel: { fontSize: 12, color: '#BDBDBD', marginBottom: 4, fontWeight: '600' },
+    inputText: { fontSize: 16, color: '#616161', fontWeight: '500' },
     middleSection: { gap: 16 },
-    toggleRow: { flexDirection: 'row', backgroundColor: '#f0f0f0', borderRadius: 25, padding: 4 },
+    toggleRow: { flexDirection: 'row', backgroundColor: '#F5F5F5', borderRadius: 25, padding: 4 },
     toggleBtn: { flex: 1, paddingVertical: 10, borderRadius: 20, alignItems: 'center' },
-    activeToggle: { backgroundColor: '#71B006' },
-    toggleText: { color: '#555', fontWeight: '600', fontSize: 12 },
-    activeToggleText: { color: '#fff' },
+    activeToggle: { backgroundColor: '#74c657' },
+    toggleText: { color: '#757575', fontWeight: '600', fontSize: 12 },
+    activeToggleText: { color: '#F5F5F5' },
     headerBg: { height: 100, justifyContent: 'center', marginTop: 10, borderRadius: 12, overflow: 'hidden' },
     headerOverlay: { flex: 1, justifyContent: 'center', paddingHorizontal: 20, borderRadius: 12 },
     routeRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
     routeTouch: { alignItems: 'center', padding: 10 },
-    airportCode: { fontSize: 36, fontWeight: '900', color: '#71B006', textAlign: 'center' },
-    cityName: { fontSize: 14, color: '#555', fontWeight: '600', textAlign: 'center' },
+    airportCode: { fontSize: 36, fontWeight: '900', color: '#74c657', textAlign: 'center' },
+    cityName: { fontSize: 14, color: '#757575', fontWeight: '600', textAlign: 'center' },
     planeLine: { flex: 1, alignItems: 'center' },
     dateContainer: { marginHorizontal: 16, marginBottom: 10 },
     dateSection: { marginBottom: 20 },

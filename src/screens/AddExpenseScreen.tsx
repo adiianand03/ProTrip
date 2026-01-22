@@ -203,7 +203,7 @@ const AddExpenseScreen = () => {
                                     style={styles.dropdownTrigger}
                                     onPress={(e) => { e.stopPropagation(); toggleDropdown(item.id, 'type'); }}
                                 >
-                                    <Text style={{ color: item.type ? '#222' : '#999' }}>
+                                    <Text style={{ color: item.type ? '#424242' : '#BDBDBD' }}>
                                         {item.type || 'Select Type'}
                                     </Text>
                                     <ChevronDownIcon width={14} height={14} />
@@ -240,7 +240,7 @@ const AddExpenseScreen = () => {
                                         style={styles.dropdownTrigger}
                                         onPress={() => openDatePicker(item.id)}
                                     >
-                                        <Text style={{ color: item.date ? '#222' : '#999' }}>
+                                        <Text style={{ color: item.date ? '#424242' : '#BDBDBD' }}>
                                             {item.date || 'Select Date'}
                                         </Text>
                                     </TouchableOpacity>
@@ -275,7 +275,7 @@ const AddExpenseScreen = () => {
                                         style={styles.dropdownTrigger}
                                         onPress={(e) => { e.stopPropagation(); toggleDropdown(item.id, 'currency'); }}
                                     >
-                                        <Text style={{ color: '#222' }}>{item.currency}</Text>
+                                        <Text style={{ color: '#424242' }}>{item.currency}</Text>
                                         <ChevronDownIcon width={14} height={14} />
                                     </TouchableOpacity>
                                     {openDropdown?.rowId === item.id && openDropdown?.field === 'currency' && (
@@ -339,11 +339,11 @@ const AddExpenseScreen = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#f5f5f5',
+        backgroundColor: '#F5F5F5',
     },
     navbar: {
         height: 56,
-        backgroundColor: '#fff',
+        backgroundColor: '#F5F5F5',
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
@@ -356,17 +356,17 @@ const styles = StyleSheet.create({
     },
     backText: {
         marginLeft: 8,
-        color: '#222',
+        color: '#424242',
         fontSize: 16,
     },
     headerTitle: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: '#222',
+        color: '#424242',
     },
     /* DARK HEADER STRIP */
     headerStrip: {
-        backgroundColor: '#444',
+        backgroundColor: '#424242',
         paddingVertical: 12,
         paddingHorizontal: 16,
         flexDirection: 'row',
@@ -377,21 +377,21 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     headerIdText: {
-        color: '#fff',
+        color: '#F5F5F5',
         fontWeight: '600',
         fontSize: 14,
     },
     contentContainer: {
         flex: 1,
-        backgroundColor: '#fcfcfc',
+        backgroundColor: '#F5F5F5',
     },
     /* INFO SECTION */
     infoSection: {
         padding: 16,
-        backgroundColor: '#fff',
+        backgroundColor: '#F5F5F5',
         marginBottom: 10,
         borderBottomWidth: 1,
-        borderBottomColor: '#eee'
+        borderBottomColor: '#EEEEEE'
     },
     infoRow: {
         flexDirection: 'row',
@@ -399,12 +399,12 @@ const styles = StyleSheet.create({
     },
     infoLabel: {
         width: 100,
-        color: '#666',
+        color: '#9E9E9E',
         fontSize: 14,
     },
     infoValue: {
         flex: 1,
-        color: '#222',
+        color: '#424242',
         fontWeight: '600',
         fontSize: 14,
     },
@@ -414,21 +414,21 @@ const styles = StyleSheet.create({
         marginLeft: 16,
         marginTop: 10,
         marginBottom: 10,
-        color: '#333',
+        color: '#616161',
     },
     /* CARD STYLES */
     expenseCard: {
-        backgroundColor: '#fff',
+        backgroundColor: '#F5F5F5',
         marginHorizontal: 16,
         marginBottom: 16,
         borderRadius: 8,
         padding: 16,
         elevation: 3,
-        shadowColor: '#000',
+        shadowColor: '#424242',
         shadowOpacity: 0.1,
         shadowOffset: { width: 0, height: 2 },
         borderLeftWidth: 5,
-        borderLeftColor: '#7cc000'
+        borderLeftColor: '#74c657'
     },
     cardHeader: {
         flexDirection: 'row',
@@ -439,14 +439,14 @@ const styles = StyleSheet.create({
         width: 24,
         height: 24,
         borderRadius: 12,
-        backgroundColor: '#f0f0f0',
+        backgroundColor: '#F5F5F5',
         justifyContent: 'center',
         alignItems: 'center',
     },
     indexText: {
         fontSize: 12,
         fontWeight: 'bold',
-        color: '#555',
+        color: '#757575',
     },
     row: {
         flexDirection: 'row',
@@ -458,27 +458,27 @@ const styles = StyleSheet.create({
     },
     label: {
         fontSize: 12,
-        color: '#888',
+        color: '#BDBDBD',
         marginBottom: 6,
     },
     textInput: {
         borderWidth: 1,
-        borderColor: '#ddd',
+        borderColor: '#E0E0E0',
         borderRadius: 4,
         height: 44,
         paddingHorizontal: 12,
         fontSize: 14,
-        color: '#222',
-        backgroundColor: '#fafafa',
+        color: '#424242',
+        backgroundColor: '#F5F5F5',
     },
     dropdownTrigger: {
         borderWidth: 1,
-        borderColor: '#ddd',
+        borderColor: '#E0E0E0',
         borderRadius: 4,
         height: 44,
         paddingHorizontal: 12,
         fontSize: 14,
-        backgroundColor: '#fafafa',
+        backgroundColor: '#F5F5F5',
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
@@ -488,9 +488,9 @@ const styles = StyleSheet.create({
         top: 48,
         left: 0,
         right: 0,
-        backgroundColor: '#fff',
+        backgroundColor: '#F5F5F5',
         borderWidth: 1,
-        borderColor: '#ddd',
+        borderColor: '#E0E0E0',
         borderRadius: 4,
         elevation: 5,
         zIndex: 100,
@@ -498,11 +498,11 @@ const styles = StyleSheet.create({
     dropdownItem: {
         padding: 12,
         borderBottomWidth: 1,
-        borderBottomColor: '#f0f0f0',
+        borderBottomColor: '#F5F5F5',
     },
     dropdownItemText: {
         fontSize: 14,
-        color: '#333',
+        color: '#616161',
     },
     uploadBtnRow: {
         flexDirection: 'row',
@@ -510,14 +510,14 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         paddingHorizontal: 16,
         borderWidth: 1,
-        borderColor: '#ddd',
+        borderColor: '#E0E0E0',
         borderRadius: 4,
-        backgroundColor: '#fafafa',
+        backgroundColor: '#F5F5F5',
         width: '100%'
     },
     uploadText: {
         fontSize: 14,
-        color: '#555',
+        color: '#757575',
         fontWeight: '500'
     },
     /* LOCAL ACTION ROW (Save / Add) */
@@ -534,12 +534,12 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         borderRadius: 4,
         borderWidth: 1,
-        borderColor: '#7cc000',
-        backgroundColor: '#fff',
+        borderColor: '#74c657',
+        backgroundColor: '#F5F5F5',
         alignItems: 'center'
     },
     localSaveText: {
-        color: '#7cc000',
+        color: '#74c657',
         fontWeight: 'bold',
         fontSize: 14,
     },
@@ -547,11 +547,11 @@ const styles = StyleSheet.create({
         flex: 1,
         paddingVertical: 12,
         borderRadius: 4,
-        backgroundColor: '#acc938',
+        backgroundColor: '#b3e0a3',
         alignItems: 'center'
     },
     localAddText: {
-        color: '#fff',
+        color: '#F5F5F5',
         fontWeight: 'bold',
         fontSize: 14,
     },
@@ -562,29 +562,29 @@ const styles = StyleSheet.create({
         left: 0,
         right: 0,
         height: 60,
-        backgroundColor: '#fff',
+        backgroundColor: '#F5F5F5',
         flexDirection: 'row',
         alignItems: 'center',
         paddingHorizontal: 16,
         borderTopWidth: 1,
-        borderTopColor: '#eee',
+        borderTopColor: '#EEEEEE',
     },
     cancelBtn: {
         paddingVertical: 10,
         paddingHorizontal: 16,
     },
     cancelBtnText: {
-        color: '#555',
+        color: '#757575',
         fontSize: 16,
     },
     submitBtn: {
-        backgroundColor: '#7cc000',
+        backgroundColor: '#74c657',
         paddingVertical: 10,
         paddingHorizontal: 32,
         borderRadius: 4,
     },
     submitBtnText: {
-        color: '#fff',
+        color: '#F5F5F5',
         fontWeight: 'bold',
         fontSize: 14,
     }

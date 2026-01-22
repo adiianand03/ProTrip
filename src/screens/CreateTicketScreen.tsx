@@ -226,7 +226,7 @@ const CreateTicketScreen: React.FC = () => {
             <View style={styles.container}>
                 <View style={styles.headerRow}>
                     <TouchableOpacity onPress={handleBack} style={{ padding: 5 }}>
-                        <Text style={{ fontSize: 24, color: '#333' }}>←</Text>
+                        <Text style={{ fontSize: 24, color: '#616161' }}>←</Text>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => navigation.navigate('TravelRequest')}>
                         <Text style={styles.myTicketsLink}>My Tickets ↗</Text>
@@ -369,8 +369,8 @@ const CreateTicketScreen: React.FC = () => {
                                     <View style={styles.fieldRow}>
                                         <Text style={[styles.fieldLabel, { marginBottom: 6 }]}>Do you want to notify to someone else?</Text>
                                         <View style={styles.dummyDropdown}>
-                                            <Text style={{ color: '#999' }}>Select an Employee</Text>
-                                            <Text style={{ color: '#999' }}>▼</Text>
+                                            <Text style={{ color: '#BDBDBD' }}>Select an Employee</Text>
+                                            <Text style={{ color: '#BDBDBD' }}>▼</Text>
                                         </View>
                                     </View>
 
@@ -378,7 +378,7 @@ const CreateTicketScreen: React.FC = () => {
                                     <View style={styles.fieldRow}>
                                         <Text style={[styles.fieldLabel, { marginBottom: 6 }]}>Additional Documents</Text>
                                         <TouchableOpacity style={styles.uploadPlaceholder}>
-                                            <Text style={{ color: '#555' }}>Select or drop files (JPG, PNG, PDF) up to 2 MB.</Text>
+                                            <Text style={{ color: '#757575' }}>Select or drop files (JPG, PNG, PDF) up to 2 MB.</Text>
                                         </TouchableOpacity>
                                     </View>
 
@@ -493,7 +493,7 @@ const platform = Platform.OS;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#f8f8f0',
+        backgroundColor: '#F5F5F5',
         paddingTop: Platform.OS === 'android' ? 25 : 0, // Manual safe area
     },
     headerRow: {
@@ -501,7 +501,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         padding: 16,
-        backgroundColor: '#f8f8f0'
+        backgroundColor: '#F5F5F5'
     },
     myTicketsLink: {
         color: '#71B006',
@@ -532,7 +532,7 @@ const styles = StyleSheet.create({
         elevation: 6,
     },
     disabledBtn: {
-        backgroundColor: '#ccc',
+        backgroundColor: '#E0E0E0',
         shadowOpacity: 0,
         elevation: 0,
     },
@@ -553,12 +553,12 @@ const styles = StyleSheet.create({
         width: 20,
         height: 20,
         borderWidth: 1,
-        borderColor: '#999',
+        borderColor: '#BDBDBD',
         borderRadius: 4,
         marginRight: 10,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#fff',
+        backgroundColor: '#F5F5F5',
     },
     checkboxChecked: {
         backgroundColor: '#71B006',
@@ -571,7 +571,7 @@ const styles = StyleSheet.create({
     },
     disclaimerText: {
         fontSize: 14,
-        color: '#333',
+        color: '#616161',
     },
     disclaimerLink: {
         textDecorationLine: 'underline',
@@ -590,7 +590,7 @@ const styles = StyleSheet.create({
     },
     modalContent: {
         width: '100%',
-        backgroundColor: '#fff',
+        backgroundColor: '#F5F5F5',
         borderRadius: 8,
         padding: 24,
         position: 'relative',
@@ -605,19 +605,19 @@ const styles = StyleSheet.create({
     },
     closeIconText: {
         fontSize: 20,
-        color: '#888',
+        color: '#BDBDBD',
         fontWeight: 'bold',
     },
     modalTitle: {
         fontSize: 16,
         fontWeight: '700',
-        color: '#333',
+        color: '#616161',
         marginTop: 10,
         marginBottom: 6,
     },
     modalText: {
         fontSize: 14,
-        color: '#555',
+        color: '#757575',
         lineHeight: 20,
         marginBottom: 16,
         textAlign: 'justify',

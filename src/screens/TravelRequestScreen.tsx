@@ -50,7 +50,7 @@ const TravelRequestScreen: React.FC = () => {
                             <SearchIcon width={20} height={20} style={styles.searchIcon} />
                             <TextInput
                                 placeholder="Search Here"
-                                placeholderTextColor="#777"
+                                placeholderTextColor="#9E9E9E"
                                 style={styles.searchInput}
                                 value={searchQuery}
                                 onChangeText={setSearchQuery}
@@ -104,24 +104,24 @@ const styles = StyleSheet.create({
     /* SCREEN */
     container: {
         flex: 1,
-        backgroundColor: '#ffffff',
+        backgroundColor: '#F5F5F5',
     },
 
     /* NAV BAR */
     navbar: {
-        backgroundColor: '#6b6b6b',
+        backgroundColor: '#757575',
         paddingVertical: 10,
         alignItems: 'center',
     },
 
     navTitle: {
-        color: '#ffffff',
+        color: '#F5F5F5',
         fontSize: 14,
         fontWeight: '600',
     },
 
     navSubtitle: {
-        color: '#eaeaea',
+        color: '#E0E0E0',
         fontSize: 11,
     },
 
@@ -135,17 +135,17 @@ const styles = StyleSheet.create({
 
     backText: {
         fontSize: 14,
-        color: '#222',
+        color: '#424242',
     },
 
     /* ACTION CARD (Search + Total) */
     card: {
         marginHorizontal: 16,
         padding: 36,
-        backgroundColor: '#ffffff',
+        backgroundColor: '#F5F5F5',
         borderRadius: 16,
 
-        shadowColor: '#000',
+        shadowColor: '#424242',
         shadowOpacity: 0.15,
         shadowRadius: 8,
         shadowOffset: { width: 0, height: 4 },
@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
         height: 54,
         borderRadius: 8,
         borderWidth: 1,
-        borderColor: '#ddd',
+        borderColor: '#E0E0E0',
         flexDirection: 'row',
         alignItems: 'center',
         paddingHorizontal: 14,
@@ -187,7 +187,7 @@ const styles = StyleSheet.create({
 
     countBox: {
         flex: 1,
-        backgroundColor: '#ffd37d',
+        backgroundColor: '#f39c12',
         paddingHorizontal: 16,
         justifyContent: 'center',
         borderRadius: 8,
@@ -198,20 +198,20 @@ const styles = StyleSheet.create({
     countText: {
         fontSize: 18,
         fontWeight: '500',
-        color: '#222',
+        color: '#424242',
     },
 
     plusBtn: {
         width: 54,
         height: 54,
         borderRadius: 27, // Circle
-        backgroundColor: '#7cb518',
+        backgroundColor: '#74c657',
         justifyContent: 'center',
         alignItems: 'center',
     },
 
     plusIconText: {
-        color: '#fff',
+        color: '#F5F5F5',
         fontSize: 28,
         fontWeight: '600',
         lineHeight: 30, // Center vertically
@@ -232,7 +232,7 @@ const styles = StyleSheet.create({
     emptyText: {
         textAlign: 'center',
         fontSize: 14,
-        color: '#555',
+        color: '#757575',
         lineHeight: 20,
     },
 });

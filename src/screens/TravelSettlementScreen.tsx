@@ -58,8 +58,8 @@ const TravelSettlement = () => {
                                     step.status === 'done'
                                         ? '#7cb518'
                                         : step.status === 'current'
-                                            ? '#007bff'
-                                            : '#e0e0e0',
+                                            ? '#74c657'
+                                            : '#E0E0E0',
                             },
                         ]}
                     >
@@ -229,7 +229,7 @@ export default TravelSettlement;
 /* ===================== STYLES ===================== */
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#fff' },
+    container: { flex: 1, backgroundColor: '#F5F5F5' },
 
     header: {
         flexDirection: 'row',
@@ -237,14 +237,14 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         borderBottomWidth: 1,
-        borderColor: '#eee',
+        borderColor: '#EEEEEE',
     },
     headerTitle: { fontSize: 18, fontWeight: '600' },
 
     card: {
         margin: 16,
         padding: 20,
-        backgroundColor: '#fff',
+        backgroundColor: '#F5F5F5',
         borderRadius: 16,
         elevation: 3,
     },
@@ -254,7 +254,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         borderWidth: 1,
-        borderColor: '#eee',
+        borderColor: '#EEEEEE',
         borderRadius: 8,
         paddingHorizontal: 12,
         height: 46,
@@ -264,7 +264,7 @@ const styles = StyleSheet.create({
     bottomRow: { flexDirection: 'row' },
     countBox: {
         flex: 1,
-        backgroundColor: '#ffd37d',
+        backgroundColor: '#f39c12',
         borderRadius: 8,
         padding: 12,
         marginRight: 12,
@@ -282,7 +282,7 @@ const styles = StyleSheet.create({
     plusIconText: { color: '#fff', fontSize: 26 },
 
     ticketCard: {
-        backgroundColor: '#fff',
+        backgroundColor: '#F5F5F5',
         borderRadius: 12,
         elevation: 3,
         marginBottom: 16,
@@ -291,7 +291,7 @@ const styles = StyleSheet.create({
 
     /* CARD HEADER */
     ticketHeader: {
-        backgroundColor: '#555',
+        backgroundColor: '#757575',
         paddingVertical: 12,
     },
     ticketHeaderCenter: {
@@ -306,7 +306,7 @@ const styles = StyleSheet.create({
         gap: 6,
     },
     headerIdText: {
-        color: '#fff',
+        color: '#F5F5F5',
         fontWeight: '600',
         fontSize: 14,
     },
@@ -316,43 +316,43 @@ const styles = StyleSheet.create({
     leftTimeline: { width: 80, alignItems: 'center' },
     verticalDivider: {
         width: 1,
-        backgroundColor: '#e5e5e5',
+        backgroundColor: '#E0E0E0',
         marginHorizontal: 10,
     },
     rightContent: { flex: 1 },
 
     infoLabel: {
         fontSize: 12,
-        color: '#666',
+        color: '#9E9E9E',
         marginTop: 6,
         fontWeight: '500',
     },
     infoValue: {
         fontSize: 15,
         fontWeight: '600',
-        color: '#222',
+        color: '#424242',
     },
 
     statusStack: { marginTop: 10, gap: 10 },
     statusBox: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#f9f9f9',
+        backgroundColor: '#F5F5F5',
         padding: 14,
         borderRadius: 12,
         borderWidth: 1,
-        borderColor: '#eee',
+        borderColor: '#EEEEEE',
         gap: 12,
     },
     statusLabel: {
         fontSize: 11,
-        color: '#666',
+        color: '#9E9E9E',
         fontWeight: '500',
     },
     statusAmount: {
         fontSize: 15,
         fontWeight: '600',
-        color: '#222',
+        color: '#424242',
     },
 
     clipboardIcon: {
@@ -368,7 +368,7 @@ const styles = StyleSheet.create({
         top: 24,
         bottom: 24,
         width: 2,
-        backgroundColor: '#e2e2e2',
+        backgroundColor: '#E0E0E0',
         left: 39,
     },
     stepContainer: { alignItems: 'center', marginBottom: 14 },

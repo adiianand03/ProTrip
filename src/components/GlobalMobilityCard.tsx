@@ -17,7 +17,7 @@ const DatePickerComponent = (DatePicker as unknown) as React.ComponentType<any>;
 
 const DeleteIcon = () => (
     <Svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-        <Path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" fill="#FF4444" />
+        <Path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" fill="#f39c12" />
     </Svg>
 );
 
@@ -89,7 +89,7 @@ const VisaDetailsItem = ({
                     style={styles.dropdownButton}
                     onPress={() => setOpen(true)}
                 >
-                    <Text style={{ color: visa.validity ? '#555' : '#888', fontSize: 12 }}>
+                    <Text style={{ color: visa.validity ? '#757575' : '#BDBDBD', fontSize: 12 }}>
                         {visa.validity ? `📅 ${visa.validity}` : 'Select Date'}
                     </Text>
                 </TouchableOpacity>
@@ -287,11 +287,11 @@ const GlobalMobilityCard = () => {
 
 const styles = StyleSheet.create({
     card: {
-        backgroundColor: '#FFFFFF',
+        backgroundColor: '#F5F5F5',
         borderRadius: 12,
         marginHorizontal: 16,
         marginBottom: 20,
-        shadowColor: '#000',
+        shadowColor: '#424242',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
         shadowRadius: 4,
@@ -311,7 +311,7 @@ const styles = StyleSheet.create({
     headerTitle: {
         fontSize: 16,
         fontWeight: 'bold',
-        color: '#333',
+        color: '#616161',
     },
     content: {
         padding: 15,
@@ -319,7 +319,7 @@ const styles = StyleSheet.create({
     label: {
         fontSize: 14,
         fontWeight: 'bold',
-        color: '#333',
+        color: '#616161',
         marginBottom: 5,
     },
     required: {
@@ -327,7 +327,7 @@ const styles = StyleSheet.create({
     },
     input: {
         borderBottomWidth: 1,
-        borderBottomColor: '#ccc',
+        borderBottomColor: '#E0E0E0',
         paddingVertical: 5,
         fontSize: 14,
         marginBottom: 15,
@@ -349,22 +349,22 @@ const styles = StyleSheet.create({
         width: 18,
         height: 18,
         borderWidth: 1,
-        borderColor: '#ccc',
+        borderColor: '#E0E0E0',
         marginRight: 10,
         borderRadius: 3,
         alignItems: 'center',
         justifyContent: 'center',
     },
     checkboxChecked: {
-        backgroundColor: '#fff',
+        backgroundColor: '#F5F5F5',
     },
     checkmark: {
-        color: '#333',
+        color: '#616161',
         fontSize: 12,
     },
     checkboxLabel: {
         fontSize: 14,
-        color: '#555',
+        color: '#757575',
     },
     visaItemContainer: {
         marginBottom: 10,
@@ -386,22 +386,22 @@ const styles = StyleSheet.create({
     },
     itemDivider: {
         height: 1,
-        backgroundColor: '#eee',
+        backgroundColor: '#EEEEEE',
         marginBottom: 15,
     },
     dropdownButton: {
         borderWidth: 1,
-        borderColor: '#ccc',
+        borderColor: '#E0E0E0',
         borderRadius: 4,
         padding: 8,
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        backgroundColor: '#fff',
+        backgroundColor: '#F5F5F5',
     },
     dropdownButtonText: {
         fontSize: 12,
-        color: '#555',
+        color: '#757575',
     },
     dropdownMenu: {
         position: 'absolute',
