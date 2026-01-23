@@ -12,12 +12,14 @@ interface DashboardCardProps {
   title: string;
   Icon: React.FC<SvgProps>;
   onPress: () => void;
+  count?: number;
 }
 
 const DashboardCard: React.FC<DashboardCardProps> = ({
   title,
   Icon,
   onPress,
+  count,
 }) => {
   return (
     <TouchableOpacity
@@ -26,6 +28,11 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
       style={styles.cardContainer}>
       <View style={styles.cardContent}>
         <Text style={styles.cardTitle}>{title}</Text>
+        {count !== undefined && (
+          <View style={{ backgroundColor: '#e8f5e9', paddingHorizontal: 12, paddingVertical: 4, borderRadius: 12, marginBottom: 10 }}>
+            <Text style={{ color: '#74c657', fontWeight: 'bold' }}>{count} Active</Text>
+          </View>
+        )}
         <View style={styles.iconContainer}>
           {/* Use flex to fill available space, preserve aspect ratio to fit fully */}
           <Icon width="100%" height="100%" preserveAspectRatio="xMidYMid meet" />

@@ -9,6 +9,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
 import { TicketProvider } from './src/context/TicketContext';
+import { AuthProvider } from './src/context/AuthContext';
 import {
   SafeAreaView,
   StatusBar, useColorScheme
@@ -39,25 +40,27 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 function App(): React.JSX.Element {
   return (
     <SafeAreaProvider>
-      <TicketProvider>
-        <NavigationContainer>
-          <Stack.Navigator
-            initialRouteName="Login"
-            screenOptions={{
-              headerShown: false,
-            }}
-          >
-            <Stack.Screen name="Login" component={LoginScreen} />
-            <Stack.Screen name="Home" component={HomeScreen} />
-            <Stack.Screen name="TravelRequest" component={TravelRequestScreen} />
-            <Stack.Screen name="CreateTicket" component={CreateTicketScreen} />
-            <Stack.Screen name="Dummy" component={DummyScreen} />
-            <Stack.Screen name="TravelSettlement" component={TravelSettlementScreen} />
-            <Stack.Screen name="TravelSettlementReport" component={TravelSettlementReport} />
-            <Stack.Screen name="AddExpense" component={AddExpenseScreen} />
-          </Stack.Navigator>
-        </NavigationContainer>
-      </TicketProvider>
+      <AuthProvider>
+        <TicketProvider>
+          <NavigationContainer>
+            <Stack.Navigator
+              initialRouteName="Login"
+              screenOptions={{
+                headerShown: false,
+              }}
+            >
+              <Stack.Screen name="Login" component={LoginScreen} />
+              <Stack.Screen name="Home" component={HomeScreen} />
+              <Stack.Screen name="TravelRequest" component={TravelRequestScreen} />
+              <Stack.Screen name="CreateTicket" component={CreateTicketScreen} />
+              <Stack.Screen name="Dummy" component={DummyScreen} />
+              <Stack.Screen name="TravelSettlement" component={TravelSettlementScreen} />
+              <Stack.Screen name="TravelSettlementReport" component={TravelSettlementReport} />
+              <Stack.Screen name="AddExpense" component={AddExpenseScreen} />
+            </Stack.Navigator>
+          </NavigationContainer>
+        </TicketProvider>
+      </AuthProvider>
     </SafeAreaProvider>
   );
 }

@@ -8,13 +8,17 @@ import {
     TextInput,
     Platform,
     Alert,
-    FlatList
+    FlatList,
+    Modal,
+    ActivityIndicator,
 } from 'react-native';
 import MainLayout from '../components/MainLayout';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
 import { TicketContext } from '../context/TicketContext';
+import { useAuth } from '../context/AuthContext';
+import { fetchTravelIds } from '../services/DashboardService';
 
 const bgImg = require('../assets/images/travelbginsidecards.png');
 
@@ -25,6 +29,28 @@ type TravelSettlementReportNavigationProp = NativeStackNavigationProp<RootStackP
 const TravelSettlementReport = () => {
     const navigation = useNavigation<TravelSettlementReportNavigationProp>();
     const { tickets } = useContext(TicketContext);
+    const { userEmail } = useAuth();
+
+    // My Settlements State
+    const [travelIds, setTravelIds] = useState<string[]>([]);
+    const [isSettlementsModalVisible, setIsSettlementsModalVisible] = useState(false);
+    const [isLoadingSettlements, setIsLoadingSettlements] = useState(false);
+
+    const handleMySettlementsPress = async () => {
+        if (!userEmail) return;
+        setIsLoadingSettlements(true);
+        setIsSettlementsModalVisible(true);
+        try {
+            const ids = await fetchTravelIds(userEmail);
+            setTravelIds(ids);
+        } catch (error) {
+            Alert.alert('Error', 'Failed to fetch settlements');
+            setIsSettlementsModalVisible(false);
+        } finally {
+            setIsLoadingSettlements(false);
+        }
+    };
+
     const [open, setOpen] = useState(false);
 
     // Form State
@@ -56,7 +82,7 @@ const TravelSettlementReport = () => {
                         <Text style={{ fontSize: 24, color: '#616161' }}>←</Text>
                     </TouchableOpacity>
                     <Text style={styles.headerTitle}>Travel Settlement</Text>
-                    <TouchableOpacity onPress={() => navigation.navigate('TravelSettlement')}>
+                    <TouchableOpacity onPress={handleMySettlementsPress}>
                         <Text style={{ color: '#74c657', fontWeight: 'bold' }}>My Settlements</Text>
                     </TouchableOpacity>
                 </View>
@@ -136,7 +162,41 @@ const TravelSettlementReport = () => {
                     </View>
                 </View>
             </View>
-        </MainLayout>
+
+            {/* My Settlements Modal */}
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={isSettlementsModalVisible}
+                onRequestClose={() => setIsSettlementsModalVisible(false)}
+            >
+                <View style={styles.modalOverlay}>
+                    <View style={styles.modalContent}>
+                        <View style={styles.modalHeader}>
+                            <Text style={styles.modalTitle}>My Settlements</Text>
+                            <TouchableOpacity onPress={() => setIsSettlementsModalVisible(false)}>
+                                <Text style={styles.closeButton}>Close</Text>
+                            </TouchableOpacity>
+                        </View>
+
+                        {isLoadingSettlements ? (
+                            <ActivityIndicator size="large" color="#74c657" style={{ marginTop: 20 }} />
+                        ) : (
+                            <FlatList
+                                data={travelIds}
+                                keyExtractor={(item) => item}
+                                renderItem={({ item }) => (
+                                    <View style={styles.ticketItem}>
+                                        <Text style={styles.ticketText}>{item}</Text>
+                                    </View>
+                                )}
+                                ListEmptyComponent={<Text style={{ textAlign: 'center', marginTop: 20, color: '#999' }}>No settlements found</Text>}
+                            />
+                        )}
+                    </View>
+                </View>
+            </Modal>
+        </MainLayout >
     );
 };
 
@@ -301,5 +361,49 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
         color: '#616161',
+    },
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        justifyContent: 'flex-end',
+    },
+    modalContent: {
+        backgroundColor: 'white',
+        borderTopLeftRadius: 20,
+        borderTopRightRadius: 20,
+        padding: 20,
+        maxHeight: '80%',
+    },
+    modalHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 20,
+        borderBottomWidth: 1,
+        borderBottomColor: '#eee',
+        paddingBottom: 10,
+    },
+    modalTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#333',
+    },
+    closeButton: {
+        color: '#74c657',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    ticketItem: {
+        padding: 15,
+        backgroundColor: '#f9f9f9',
+        borderRadius: 10,
+        marginBottom: 10,
+        borderWidth: 1,
+        borderColor: '#eee',
+    },
+    ticketText: {
+        fontSize: 16,
+        color: '#333',
+        fontWeight: '500',
     },
 });

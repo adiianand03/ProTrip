@@ -12,32 +12,28 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import MobileBg from '../assets/images/mobile-bg.svg';
-import EyeIcon from '../assets/images/eye.svg';
-import EyeOffIcon from '../assets/images/eye-off.svg';
 import Logo from '../assets/images/applogo.svg';
+import { useAuth } from '../context/AuthContext';
 
 const LoginScreen = () => {
     const navigation = useNavigation<any>();
+    const { login } = useAuth();
     const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [isPasswordVisible, setIsPasswordVisible] = useState(false);
     const { height: screenHeight } = Dimensions.get('window');
 
-    // Hardcoded credentials
+    // Hardcoded credentials - kept for reference if needed, but logic is relaxed
     const HARDCODED_EMAIL = 'abc@example.com';
-    const HARDCODED_PASSWORD = '123456';
 
     const handleLogin = () => {
-        if (!email || !password) {
-            Alert.alert('Error', 'Please enter both email and password');
+        if (!email) {
+            Alert.alert('Error', 'Please enter your email');
             return;
         }
 
-        if (email === HARDCODED_EMAIL && password === HARDCODED_PASSWORD) {
-            navigation.replace('Home');
-        } else {
-            Alert.alert('Error', 'Invalid email or password');
-        }
+        // For simulation/SSO replication, we just proceed with the entered email
+        // Logic can be added here to validate against allowed domains/users if needed
+        login(email);
+        navigation.replace('Home');
     };
 
     return (
@@ -59,7 +55,6 @@ const LoginScreen = () => {
 
                 {/* Login Form */}
                 <View style={styles.form}>
-
                     <Text style={styles.label}>Email/Username</Text>
                     <TextInput
                         style={styles.input}
@@ -70,28 +65,6 @@ const LoginScreen = () => {
                         keyboardType="email-address"
                         autoCapitalize="none"
                     />
-
-                    <Text style={styles.label}>Password</Text>
-                    <View style={styles.passwordContainer}>
-                        <TextInput
-                            style={styles.passwordInput}
-                            placeholder="Enter your password"
-                            placeholderTextColor="#BDBDBD"
-                            value={password}
-                            onChangeText={setPassword}
-                            secureTextEntry={!isPasswordVisible}
-                        />
-                        <TouchableOpacity
-                            style={styles.eyeButton}
-                            onPress={() => setIsPasswordVisible(!isPasswordVisible)}
-                        >
-                            {isPasswordVisible ? (
-                                <EyeIcon width={24} height={24} />
-                            ) : (
-                                <EyeOffIcon width={24} height={24} />
-                            )}
-                        </TouchableOpacity>
-                    </View>
 
                     <TouchableOpacity style={styles.button} onPress={handleLogin}>
                         <Text style={styles.buttonText}>Login</Text>

@@ -47,6 +47,7 @@ const CreateTicketScreen: React.FC = () => {
     const navigation = useNavigation<CreateTicketScreenNavigationProp>();
     const { addTicket } = useContext(TicketContext);
 
+
     // State Lifting
     const [tripType, setTripType] = useState<'One Way' | 'Round Trip' | 'Multi-city'>('One Way');
 

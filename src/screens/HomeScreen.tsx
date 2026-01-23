@@ -9,6 +9,9 @@ import {
     Alert,
     Platform,
     Dimensions,
+    ActivityIndicator,
+    Modal,
+    FlatList,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import DashboardCard from '../components/DashboardCard';
@@ -26,6 +29,8 @@ import ProfileIcon from '../assets/images/profile.svg';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
+import { useAuth } from '../context/AuthContext';
+import { fetchDashboardData, fetchUserEntity, DashboardData, EmployeeEntity } from '../services/DashboardService';
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Home'>;
 
@@ -36,9 +41,47 @@ const HomeScreen: React.FC<HomeScreenProps> = () => {
     const [isProfileOpen, setIsProfileOpen] = React.useState(false);
     const { height: screenHeight } = Dimensions.get('window');
 
+    const { userEmail } = useAuth();
+    const [dashboardData, setDashboardData] = React.useState<DashboardData | null>(null);
+    const [entityData, setEntityData] = React.useState<EmployeeEntity | null>(null);
+    const [isLoading, setIsLoading] = React.useState(false);
+
+    React.useEffect(() => {
+        const loadDashboardData = async () => {
+            if (userEmail) {
+                setIsLoading(true);
+                try {
+                    const [dashData, entData] = await Promise.all([
+                        fetchDashboardData(userEmail),
+                        fetchUserEntity(userEmail)
+                    ]);
+                    setDashboardData(dashData);
+                    setEntityData(entData);
+                    console.log('Dashboard Data Fetched:', dashData);
+                } catch (error) {
+                    // console.error(error); handled in service
+                } finally {
+                    setIsLoading(false);
+                }
+            }
+        };
+        loadDashboardData();
+    }, [userEmail]);
+
     const handleHomePress = () => {
-        // Already on home, maybe scroll to top or no-op
-        console.log('Home Pressed');
+        // Reload data on home press
+        if (userEmail) {
+            setIsLoading(true);
+            Promise.all([
+                fetchDashboardData(userEmail),
+                fetchUserEntity(userEmail)
+            ])
+                .then(([dashData, entData]) => {
+                    setDashboardData(dashData);
+                    setEntityData(entData);
+                })
+                .finally(() => setIsLoading(false));
+        }
     };
 
     const handleUploadPress = () => {
@@ -78,18 +121,42 @@ const HomeScreen: React.FC<HomeScreenProps> = () => {
             >
 
 
+
                 {/* Dashboard Grid */}
-                <View style={styles.gridContainer}>
-                    <DashboardCard
-                        title="Travel Request"
-                        Icon={TravelRequestIcon}
-                        onPress={() => navigation.navigate('CreateTicket')}
-                    />
-                    <DashboardCard
-                        title="Travel Settlement"
-                        Icon={ExpenseReportIcon}
-                        onPress={() => navigation.navigate('TravelSettlementReport')}
-                    />
+                <View style={[styles.gridContainer, { marginBottom: 10 }]}>
+                    {isLoading ? (
+                        <View style={{ height: 200, justifyContent: 'center', alignItems: 'center' }}>
+                            <ActivityIndicator size="large" color="#74c657" />
+                            <Text style={{ marginTop: 10, color: '#9E9E9E' }}>Loading details...</Text>
+                        </View>
+                    ) : (
+                        <>
+                            <DashboardCard
+                                title="Travel Request"
+                                Icon={TravelRequestIcon}
+                                onPress={() => navigation.navigate('CreateTicket')}
+                                count={dashboardData?.travel_items?.length}
+                            />
+                            <DashboardCard
+                                title="Travel Settlement"
+                                Icon={ExpenseReportIcon}
+                                onPress={() => navigation.navigate('TravelSettlementReport')}
+                                count={dashboardData?.expense_items?.length}
+                            />
+                            {dashboardData?.user_role && (
+                                <View style={{ padding: 20, alignItems: 'center' }}>
+                                    <Text style={{ color: '#616161', fontStyle: 'italic' }}>
+                                        Logged in as: {dashboardData.user_role}
+                                    </Text>
+                                    {entityData && (
+                                        <Text style={{ color: '#9E9E9E', fontSize: 12, marginTop: 4 }}>
+                                            {entityData.Entity} | {entityData.Currency}
+                                        </Text>
+                                    )}
+                                </View>
+                            )}
+                        </>
+                    )}
                 </View>
 
             </ScrollView>
