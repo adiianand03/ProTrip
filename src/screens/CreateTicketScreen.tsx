@@ -18,6 +18,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
 import CreateTicketForm from '../components/CreateTicketForm';
 import { TicketContext } from '../context/TicketContext';
+import { fetchActiveEmployees, fetchActiveCostCodes } from '../services/EmployeeService';
 import AccountInfoCard from '../components/AccountInfoCard';
 import GlobalMobilityCard from '../components/GlobalMobilityCard';
 import TravellerDetailsCard from '../components/TravellerDetailsCard';
@@ -46,6 +47,30 @@ type CreateTicketScreenNavigationProp = NativeStackNavigationProp<RootStackParam
 const CreateTicketScreen: React.FC = () => {
     const navigation = useNavigation<CreateTicketScreenNavigationProp>();
     const { addTicket } = useContext(TicketContext);
+
+    // Fetch External Data
+    React.useEffect(() => {
+        const loadExternalData = async () => {
+            try {
+                // 1. Fetch Active Employees
+                console.log('Fetching active employees...');
+                const employees = await fetchActiveEmployees();
+                console.log('Active Employees Fetched:', employees?.length);
+
+                // 2. Fetch Cost Codes (TODO: Replace '12345' with actual employee_code/mst_id)
+                // The API requires an employee code. Using a placeholder for now to verify connectivity.
+                // In production, this should come from the user's profile/entity.
+                const dummyEmpCode = '10041'; // Example ID
+                console.log('Fetching cost codes for:', dummyEmpCode);
+                const costCodes = await fetchActiveCostCodes(dummyEmpCode);
+                console.log('Cost Codes Fetched:', costCodes?.length);
+
+            } catch (error) {
+                console.error('Error loading external data:', error);
+            }
+        };
+        loadExternalData();
+    }, []);
 
 
     // State Lifting

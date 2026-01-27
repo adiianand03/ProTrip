@@ -14,6 +14,7 @@ import { useNavigation } from '@react-navigation/native';
 import MobileBg from '../assets/images/mobile-bg.svg';
 import Logo from '../assets/images/applogo.svg';
 import { useAuth } from '../context/AuthContext';
+import { fetchLocationId } from '../services/EmployeeService';
 
 const LoginScreen = () => {
     const navigation = useNavigation<any>();
@@ -24,7 +25,7 @@ const LoginScreen = () => {
     // Hardcoded credentials - kept for reference if needed, but logic is relaxed
     const HARDCODED_EMAIL = 'abc@example.com';
 
-    const handleLogin = () => {
+    const handleLogin = async () => {
         if (!email) {
             Alert.alert('Error', 'Please enter your email');
             return;
@@ -33,6 +34,16 @@ const LoginScreen = () => {
         // For simulation/SSO replication, we just proceed with the entered email
         // Logic can be added here to validate against allowed domains/users if needed
         login(email);
+
+        try {
+            console.log('Fetching location details for:', email);
+            const [locId, locName] = await fetchLocationId(email);
+            console.log('Location Details Fetched:', { locId, locName });
+        } catch (error) {
+            console.error('Error fetching location details:', error);
+            // We don't block login if this fails, just log it
+        }
+
         navigation.replace('Home');
     };
 
